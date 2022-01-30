@@ -1,0 +1,27 @@
+[INFO] AOT mode enabled
+[INFO] HikariPool-1 - Starting...
+[INFO] HikariPool-1 - Start completed.
+[DEBUG] ==>  Preparing: INSERT INTO city (name, state, country) VALUES(?, ?, ?)
+[DEBUG] ==> Parameters: NYC(String), NY(String), USA(String)
+[DEBUG] <==    Updates: 1
+[INFO] New city: City{id=4, name='NYC', state='NY', country='USA'}
+[DEBUG] Cache Hit Ratio [org.mybatis.spring.nativex.sample.cache.CityMapper]: 0.0
+[DEBUG] ==>  Preparing: SELECT id, name, state, country FROM city ORDER BY id
+[DEBUG] ==> Parameters: 
+[TRACE] <==    Columns: ID, NAME, STATE, COUNTRY
+[TRACE] <==        Row: 1, San Francisco, CA, USA
+[TRACE] <==        Row: 2, Boston, MA, USA
+[TRACE] <==        Row: 3, Portland, OR, USA
+[TRACE] <==        Row: 4, NYC, NY, USA
+[DEBUG] <==      Total: 4
+[INFO] City{id=1, name='San Francisco', state='CA', country='USA'}
+[INFO] City{id=2, name='Boston', state='MA', country='USA'}
+[INFO] City{id=3, name='Portland', state='OR', country='USA'}
+[INFO] City{id=4, name='NYC', state='NY', country='USA'}
+[DEBUG] Cache Hit Ratio [org.mybatis.spring.nativex.sample.cache.CityMapper]: 0.5
+[INFO] City{id=1, name='San Francisco', state='CA', country='USA'}
+[INFO] City{id=2, name='Boston', state='MA', country='USA'}
+[INFO] City{id=3, name='Portland', state='OR', country='USA'}
+[INFO] City{id=4, name='NYC', state='NY', country='USA'}
+[INFO] HikariPool-1 - Shutdown initiated...
+[INFO] HikariPool-1 - Shutdown completed.

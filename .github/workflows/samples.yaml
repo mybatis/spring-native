@@ -1,0 +1,65 @@
+name: Samples
+on:
+  push:
+  pull_request:
+jobs:
+  build:
+    name: Run ${{ matrix.sample }} on ${{ matrix.os }} (GraalVM ${{ matrix.java }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - 'ubuntu-latest'
+          - 'windows-latest'
+        java:
+          - 17
+        sample:
+          - 'simple'
+          - 'xml'
+          - 'sqlprovider'
+          - 'scan'
+          - 'dao'
+          - 'thymeleaf'
+          - 'thymeleaf-sqlgenerator'
+          - 'velocity'
+          - 'freemarker'
+          - 'cache'
+          - 'configuration'
+          - 'dynamic-sql'
+      fail-fast: false
+      max-parallel: 10
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up GraalVM
+        uses: graalvm/setup-graalvm@v1
+        with:
+          version: 'latest'
+          java-version: ${{ matrix.java }}
+          components: 'native-image'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Cache local Maven repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-samples-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-samples-
+      - name: Print environments
+        run: |
+          echo "GRAALVM_HOME: $GRAALVM_HOME"
+          echo "JAVA_HOME: $JAVA_HOME"
+          java --version
+          native-image --version
+      - name: Build native image
+        run: ./mvnw -pl core,extensions,samples/${{ matrix.sample }} -U -D"maven.test.skip" -Pnative -D"license.skip=true" clean package
+      - name: Run with native image
+        run: ./samples/${{ matrix.sample }}/target/mybatis-spring-native-sample-${{ matrix.sample }}
+      - name: Run with executable jar on AOT mode
+        run: java -DspringAot=true -jar ./samples/${{ matrix.sample }}/target/mybatis-spring-native-sample-${{ matrix.sample }}-exec.jar
+      - name: Run with executable jar
+        run: java -jar ./samples/${{ matrix.sample }}/target/mybatis-spring-native-sample-${{ matrix.sample }}-exec.jar
+      - name: Verify running with native image for ubuntu
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          ./samples/${{ matrix.sample }}/target/mybatis-spring-native-sample-${{ matrix.sample }} --logging.pattern.console="[%level] %m%n" --spring.main.banner-mode=off --logging.level.org.mybatis.spring.nativex.sample=off | tee actual-console.log
+          diff actual-console.log ./samples/${{ matrix.sample }}/src/test/resources/expected-console.log

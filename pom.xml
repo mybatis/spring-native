@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+       Copyright 2022 the original author or authors.
+
+       Licensed under the Apache License, Version 2.0 (the "License");
+       you may not use this file except in compliance with the License.
+       You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing, software
+       distributed under the License is distributed on an "AS IS" BASIS,
+       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       See the License for the specific language governing permissions and
+       limitations under the License.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.mybatis</groupId>
+    <artifactId>mybatis-parent</artifactId>
+    <version>33</version>
+    <relativePath/>
+  </parent>
+
+  <groupId>org.mybatis.spring.native</groupId>
+  <artifactId>mybatis-spring-native</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>mybatis-spring-native</name>
+  <description>MyBatis integration with Spring Native feature</description>
+  <url>https://www.mybatis.org/spring-native/</url>
+  <inceptionYear>2022</inceptionYear>
+
+  <scm>
+    <connection>scm:git:git@github.com:mybatis/spring-native.git</connection>
+    <developerConnection>scm:git:git@github.com:mybatis/spring-native.git</developerConnection>
+    <url>https://github.com/mybatis/spring-native/tree/master</url>
+    <tag>HEAD</tag>
+  </scm>
+  <issueManagement>
+    <system>GitHub Issue Management</system>
+    <url>https://github.com/mybatis/spring-native/issues</url>
+  </issueManagement>
+  <ciManagement>
+    <system>GitHub Actions</system>
+    <url>https://github.com/mybatis/spring-native/actions</url>
+  </ciManagement>
+  <distributionManagement>
+    <site>
+      <id>gh-pages</id>
+      <name>Mybatis GitHub Pages</name>
+      <url>git:ssh://git@github.com/mybatis/spring-native.git?gh-pages#</url>
+    </site>
+  </distributionManagement>
+
+  <contributors>
+    <contributor>
+      <name>Kazuki Shimizu</name>
+      <email>kazuki43zoo@gmail.com</email>
+    </contributor>
+  </contributors>
+
+  <modules>
+    <module>core</module>
+    <module>extensions</module>
+    <module>samples</module>
+    <module>docs</module>
+  </modules>
+
+  <properties>
+    <!-- Project settings -->
+    <java.version>11</java.version>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+    <maven.compiler.testTarget>${java.version}</maven.compiler.testTarget>
+    <maven.compiler.testSource>${java.version}</maven.compiler.testSource>
+
+    <!-- Dependencies artifact version -->
+    <mybatis.version>3.5.9</mybatis.version>
+    <mybatis-spring.version>2.0.7</mybatis-spring.version>
+    <mybatis-spring-boot.version>2.2.2</mybatis-spring-boot.version>
+    <mybatis-thymeleaf.version>1.0.3</mybatis-thymeleaf.version>
+    <mybatis-velocity.version>2.1.1</mybatis-velocity.version>
+    <mybatis-freemarker.version>1.2.3</mybatis-freemarker.version>
+    <mybatis-dynamic-sql.version>1.3.1</mybatis-dynamic-sql.version>
+    <spring-boot.version>2.6.3</spring-boot.version>
+    <spring-native.version>0.11.2</spring-native.version>
+  </properties>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>${project.basedir}/src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+      <resource>
+        <directory>${project.basedir}/src/site</directory>
+        <targetPath>${project.build.directory}/site-src</targetPath>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <configuration>
+            <!-- Build using files that replace a placeholder using project properties -->
+            <siteDirectory>${project.build.directory}/site-src</siteDirectory>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.mybatis</groupId>
+        <artifactId>mybatis</artifactId>
+        <version>${mybatis.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mybatis</groupId>
+        <artifactId>mybatis-spring</artifactId>
+        <version>${mybatis-spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mybatis.spring.boot</groupId>
+        <artifactId>mybatis-spring-boot-starter</artifactId>
+        <version>${mybatis-spring-boot.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mybatis.scripting</groupId>
+        <artifactId>mybatis-thymeleaf</artifactId>
+        <version>${mybatis-thymeleaf.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mybatis.scripting</groupId>
+        <artifactId>mybatis-velocity</artifactId>
+        <version>${mybatis-velocity.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mybatis.scripting</groupId>
+        <artifactId>mybatis-freemarker</artifactId>
+        <version>${mybatis-freemarker.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mybatis.dynamic-sql</groupId>
+        <artifactId>mybatis-dynamic-sql</artifactId>
+        <version>${mybatis-dynamic-sql.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mybatis.spring.boot</groupId>
+        <artifactId>mybatis-spring-boot-autoconfigure</artifactId>
+        <version>${mybatis-spring-boot.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.experimental</groupId>
+        <artifactId>spring-native</artifactId>
+        <version>${spring-native.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.experimental</groupId>
+        <artifactId>spring-aot</artifactId>
+        <version>${spring-native.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mybatis.spring.native</groupId>
+        <artifactId>mybatis-spring-native-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mybatis.spring.native</groupId>
+        <artifactId>mybatis-spring-native-extensions</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>${spring-boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <repositories>
+    <repository>
+      <id>sonatype-oss-snapshots</id>
+      <name>Sonatype OSS Snapshots Repository</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </repository>
+    <repository>
+      <id>spring-releases</id>
+      <name>Spring Releases</name>
+      <url>https://repo.spring.io/release</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>spring-milestone</id>
+      <name>Spring Milestone</name>
+      <url>https://repo.spring.io/milestone</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>spring-snapshot</id>
+      <name>Spring Snapshot</name>
+      <url>https://repo.spring.io/snapshot</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>spring-releases</id>
+      <name>Spring Releases</name>
+      <url>https://repo.spring.io/release</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>spring-milestone</id>
+      <name>Spring Milestone</name>
+      <url>https://repo.spring.io/milestone</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>spring-snapshot</id>
+      <name>Spring Snapshot</name>
+      <url>https://repo.spring.io/snapshot</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
+
+</project>

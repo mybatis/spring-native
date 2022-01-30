@@ -1,0 +1,10 @@
+org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor=\
+  org.mybatis.spring.nativex.MyBatisMapperNativeConfigurationProcessor,\
+  org.mybatis.spring.nativex.MyBatisScannedResourcesNativeConfigurationProcessor
+org.springframework.context.annotation.BeanDefinitionPostProcessor=\
+  org.mybatis.spring.nativex.MyBatisMapperFactoryBeanPostProcessor
+org.springframework.nativex.type.NativeConfiguration=\
+  org.mybatis.spring.nativex.MyBatisCoreNativeConfiguration,\
+  org.mybatis.spring.nativex.MyBatisSpringNativeConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  org.mybatis.spring.nativex.autoconfigure.MyBatisSpringNativeAutoConfiguration

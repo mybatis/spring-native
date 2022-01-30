@@ -1,0 +1,37 @@
+name: Java CI
+on:
+  push:
+  pull_request:
+jobs:
+  build:
+    name: Verify on ${{ matrix.os }} (Java ${{ matrix.java }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - 'ubuntu-latest'
+          - 'windows-latest'
+          - 'macos-latest'
+        java:
+          - 11
+          - 17
+      fail-fast: false
+      max-parallel: 6
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: ${{ matrix.java }}
+          distribution: 'zulu'
+      - name: Cache local Maven repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Show a Java version
+        run: java -version
+      - name: Verify a mybatis-spring-native-core
+        run: ./mvnw -U -pl .,core,extensions clean verify -D"license.skip=true"
