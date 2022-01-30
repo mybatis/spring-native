@@ -1,0 +1,10 @@
+[INFO] AOT mode enabled
+[INFO] HikariPool-1 - Starting...
+[INFO] HikariPool-1 - Start completed.
+[INFO] New city: City{id=4, name='NYC', state='NY', country='USA'}
+[INFO] City{id=1, name='San Francisco', state='CA', country='USA'}
+[INFO] City{id=2, name='Boston', state='MA', country='USA'}
+[INFO] City{id=3, name='Portland', state='OR', country='USA'}
+[INFO] City{id=4, name='NYC', state='NY', country='USA'}
+[INFO] HikariPool-1 - Shutdown initiated...
+[INFO] HikariPool-1 - Shutdown completed.
