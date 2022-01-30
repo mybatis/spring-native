@@ -40,7 +40,7 @@ The MyBatis Spring Native help you build quickly MyBatis applications on top of 
 
 * May not work if you use a subclass of `MapperFactoryBean`, See https://github.com/kazuki43zoo/mybatis-spring-native/pull/32
 * Does not register nested types(hold on parameter and return type) to native hint(reflection hint)
-* Fail bean initializing when specify `@Transactional` on mapper interface, See https://github.com/kazuki43zoo/mybatis-spring-native/issues/29
+* Fail bean initializing when specify `@Transactional` on mapper interface, See https://github.com/mybatis/spring-native/issues/2
 * etc ...
 
 # Modules
