@@ -205,6 +205,7 @@ Execute the following command when the build is completed.
 
 * https://spring.io/blog/2021/12/29/go-go-graalvm-with-spring-native-my-adventures-in-native-image-ville
 * https://joshlong.com/jl/blogPost/mybatis-and-spring-native.html
+* https://github.com/spring-projects-experimental/spring-native/issues/404
 
 ## Special Thanks
 
