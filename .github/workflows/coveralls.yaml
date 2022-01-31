@@ -11,6 +11,13 @@ jobs:
         with:
           java-version: 11
           distribution: zulu
+      - name: Cache local Maven repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
       - name: Report Coverage to Coveralls for Pull Requests
         if: github.event_name == 'pull_request'
         run: ./mvnw -pl core,extensions test jacoco:report coveralls:report -q -Dlicense.skip=true -DrepoToken=$GITHUB_TOKEN -DserviceName=github -DpullRequest=$PR_NUMBER

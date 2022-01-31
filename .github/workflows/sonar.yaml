@@ -17,6 +17,13 @@ jobs:
         with:
           java-version: 11
           distribution: zulu
+      - name: Cache local Maven repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
       - name: Analyze with SonarCloud
         run: ./mvnw verify jacoco:report sonar:sonar -B -Dsonar.projectKey=mybatis_spring-native -Dsonar.organization=mybatis -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN -Dlicense.skip=true
         env:
