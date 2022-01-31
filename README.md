@@ -2,6 +2,11 @@
 
 [![Java CI](https://github.com/mybatis/spring-native/actions/workflows/ci.yaml/badge.svg)](https://github.com/mybatis/spring-native/actions/workflows/ci.yaml)
 [![Samples](https://github.com/mybatis/spring-native/actions/workflows/samples.yaml/badge.svg)](https://github.com/mybatis/spring-native/actions/workflows/samples.yaml)
+[![Coverage Status](https://coveralls.io/repos/github/mybatis/spring-native/badge.svg?branch=master)](https://coveralls.io/github/mybatis/spring-native?branch=master)
+[![Maven central](https://maven-badges.herokuapp.com/maven-central/org.mybatis.spring.native/mybatis-spring-native/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.mybatis.spring.native/mybatis-spring-native)
+[![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/https/oss.sonatype.org/org.mybatis.spring.native/mybatis-spring-native.svg)](https://oss.sonatype.org/content/repositories/snapshots/org/mybatis/spring/native/mybatis-spring-native/)
+[![License](http://img.shields.io/:license-apache-brightgreen.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
+
 
 ![mybatis-spring](http://mybatis.github.io/images/mybatis-logo.png)
 
