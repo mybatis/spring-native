@@ -18,9 +18,80 @@ The project that the MyBatis integration with Spring Native feature.
 
 ## Essentials
 
+* [Quick Start](https://github.com/mybatis/spring-native/wiki/Quick-Start)
 * [Reference documentation](docs/src/site/markdown/index.md)
 
+## How to install on your application
+
+Specify the `mybatis-spring-native-core` on `pom.xml` as follows:
+
+**Maven:**
+
+```xml
+<dependencies>
+  <dependency>
+    <groupId>org.mybatis.spring.native</groupId>
+    <artifactId>mybatis-spring-native-core</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+  </dependency>
+</dependencies>
+```
+
+**Gradle:**
+
+```groovy
+dependencies {
+  compile("org.mybatis.spring.native:mybatis-spring-native-core:0.1.0-SNAPSHOT")
+}
+```
+
+If you use other extension modules provided by mybatis, please specify the `mybatis-spring-native-extensions` instead of `mybatis-spring-native-core`.
+
+**Maven:**
+
+```xml
+<dependencies>
+  <dependency>
+    <groupId>org.mybatis.spring.native</groupId>
+    <artifactId>mybatis-spring-native-extensions</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+  </dependency>
+</dependencies>
+```
+
+**Gradle:**
+
+```groovy
+dependencies {
+  compile("org.mybatis.spring.native:mybatis-spring-native-extensions:0.1.0-SNAPSHOT")
+}
+```
+
+Add Sonatype OSS snapshot repository when use MyBatis's snapshot modules.
+
+**Maven:**
+
+```xml
+<repositories>
+  <repository>
+    <id>sonatype-oss-snapshots</id>
+    <name>Sonatype OSS Snapshots Repository</name>
+   <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+  </repository>
+</repositories>
+```
+
+**Gradle:**
+
+```groovy
+repositories {
+  maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+}
+```
+
 ## How to build
+
+If you want to build this project, please will execute following procedures.
 
 > **NOTE: Pre Conditions**
 >
@@ -55,7 +126,9 @@ The project that the MyBatis integration with Spring Native feature.
 ./mvnw -pl core,extensions,samples/thymeleaf -Pnative clean package
 ```
 
-## How to run
+## How to run a sample
+
+Execute the following command when the build is completed.
 
 ### Run with Native Image
 
@@ -118,55 +191,6 @@ The project that the MyBatis integration with Spring Native feature.
 2022-01-22 13:45:15.806  INFO 2305 --- [           main] s.s.MybatisSpringNativeSampleApplication : City{id=4, name='NYC', state='NY', country='USA'}
 2022-01-22 13:45:15.816  INFO 2305 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
 2022-01-22 13:45:15.823  INFO 2305 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
-```
-
-## How to install integrating modules and use it on your application
-
-Install the `mybatis-spring-native-core` (and `mybatis-spring-native-extensions`) on your local repository as follows:
-
-```
-./mvnw -pl core,extensions clean install
-```
-
-Specify the `mybatis-spring-native-core` and `mybatis-spring-boot-starter` on `pom.xml` as follows:
-
-```xml
-<dependencies>
-  <dependency>
-    <groupId>org.mybatis.spring.native</groupId>
-    <artifactId>mybatis-spring-native-core</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
-  </dependency>
-  <dependency>
-    <groupId>org.mybatis.spring.boot</groupId>
-    <artifactId>mybatis-spring-boot-starter</artifactId>
-    <version>2.2.2</version>
-  </dependency>
-</dependencies>
-```
-
-If you use other extension modules provided by mybatis, please specify the `mybatis-spring-native-extensions` instead of `mybatis-spring-native-core`.
-
-```xml
-<dependencies>
-  <dependency>
-    <groupId>org.mybatis.spring.native</groupId>
-    <artifactId>mybatis-spring-native-extensions</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
-  </dependency>
-</dependencies>
-```
-
-Add snapshot repository when use MyBatis's snapshot modules.
-
-```xml
-<repositories>
-  <repository>
-    <id>sonatype-oss-snapshots</id>
-    <name>Sonatype OSS Snapshots Repository</name>
-   <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-  </repository>
-</repositories>
 ```
 
 ## Related Links
