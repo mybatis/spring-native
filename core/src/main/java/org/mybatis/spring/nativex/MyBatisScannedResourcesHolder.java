@@ -296,8 +296,10 @@ public class MyBatisScannedResourcesHolder {
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
       AnnotationAttributes mapperScansAttrs = AnnotationAttributes
           .fromMap(importingClassMetadata.getAnnotationAttributes(MyBatisResourcesScan.List.class.getName()));
-      for (AnnotationAttributes annoAttrs : mapperScansAttrs.getAnnotationArray("value")) {
-        this.registerBeanDefinitions(annoAttrs, registry);
+      if (mapperScansAttrs != null) {
+        for (AnnotationAttributes annoAttrs : mapperScansAttrs.getAnnotationArray("value")) {
+          this.registerBeanDefinitions(annoAttrs, registry);
+        }
       }
     }
 
