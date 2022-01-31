@@ -181,7 +181,7 @@ public class MyBatisScannedResourcesHolder {
   }
 
   static class Registrar implements ImportBeanDefinitionRegistrar {
-    private static final Log LOG = LogFactory.getLog(MyBatisMapperFactoryBeanPostProcessor.class);
+    private static final Log LOG = LogFactory.getLog(Registrar.class);
     private static final ResourcePatternResolver RESOURCE_PATTERN_RESOLVER = new PathMatchingResourcePatternResolver();
     private static final MetadataReaderFactory METADATA_READER_FACTORY = new CachingMetadataReaderFactory();
     private static final Pattern JAR_RESOURCE_PREFIX_PATTERN = Pattern.compile(".*\\.jar!/");

@@ -62,6 +62,7 @@ class MyBatisMapperNativeConfigurationProcessorTest {
       QUERY_DECLARED_METHODS, QUERY_PUBLIC_METHODS, QUERY_DECLARED_CONSTRUCTORS, QUERY_PUBLIC_CONSTRUCTORS };
 
   @Test
+  @SuppressWarnings("java:S5961")
   void registerMapperInterfaceAndRelationships() {
     DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
     beanFactory.registerBeanDefinition("sampleMapper",

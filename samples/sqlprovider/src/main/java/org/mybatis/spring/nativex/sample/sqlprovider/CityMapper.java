@@ -37,6 +37,7 @@ public interface CityMapper {
       // NOP
     }
 
+    @SuppressWarnings({ "java:S3400", "unused" })
     public static String provideSql() {
       return "INSERT INTO city (name, state, country) VALUES(#{name}, #{state}, #{country})";
     }
@@ -47,6 +48,7 @@ public interface CityMapper {
       // NOP
     }
 
+    @SuppressWarnings({ "java:S3400", "unused" })
     public static String provideSqlForFindAll() {
       return "SELECT id, name, state, country FROM city ORDER BY id";
     }

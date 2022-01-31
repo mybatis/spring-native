@@ -67,13 +67,16 @@ public class MyBatisMapperNativeConfigurationProcessor implements BeanFactoryNat
    */
   @Override
   public void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
-    if (ClassUtils.isPresent(MAPPER_FACTORY_BEAN, beanFactory.getBeanClassLoader())) {
-      String[] beanNames = beanFactory.getBeanNamesForType(MapperFactoryBean.class);
-      for (String beanName : beanNames) {
-        BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName.substring(1));
-        PropertyValue mapperInterface = beanDefinition.getPropertyValues().getPropertyValue("mapperInterface");
-        if (mapperInterface != null && mapperInterface.getValue() != null) {
-          Class<?> mapperInterfaceType = (Class<?>) mapperInterface.getValue();
+    if (!ClassUtils.isPresent(MAPPER_FACTORY_BEAN, beanFactory.getBeanClassLoader())) {
+      return;
+    }
+    String[] beanNames = beanFactory.getBeanNamesForType(MapperFactoryBean.class);
+    for (String beanName : beanNames) {
+      BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName.substring(1));
+      PropertyValue mapperInterface = beanDefinition.getPropertyValues().getPropertyValue("mapperInterface");
+      if (mapperInterface != null && mapperInterface.getValue() != null) {
+        Class<?> mapperInterfaceType = (Class<?>) mapperInterface.getValue();
+        if (mapperInterfaceType != null) {
           registerReflectionTypeIfNecessary(mapperInterfaceType, registry);
           registry.proxy().add(NativeProxyEntry.ofInterfaces(mapperInterfaceType));
           registry.resources()
