@@ -17,7 +17,7 @@ The MyBatis Spring Native help you build quickly MyBatis applications on top of 
 
 * Scan mapper interfaces using `@MapperScan` instead of automatically scan
 
-### MyBatis Spring　Boot
+### MyBatis Spring Boot
 
 * Configure the `SqlSessionFactory` and `SqlSessionTemplate` automatically
 * Scan mapper interfaces annotated `@Mapper` automatically
