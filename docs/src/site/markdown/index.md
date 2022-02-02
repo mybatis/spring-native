@@ -17,10 +17,13 @@ The MyBatis Spring Native help you build quickly MyBatis applications on top of 
 
 * Scan mapper interfaces using `@MapperScan` instead of automatically scan
 
-### MyBatis Spring
+### MyBatis Spring　Boot
 
 * Configure the `SqlSessionFactory` and `SqlSessionTemplate` automatically
 * Scan mapper interfaces annotated `@Mapper` automatically
+* Customize MyBatis behavior using configuration properties(`application.properties`)
+* Detect MyBatis components(`Interceptor`, `TypeHandler`, `LanguageDriver` and `DatabaseIdProvider`) from DI container
+* Detect customizer components (class that implements `ConfigurationCustomizer` or `SqlSessionFactoryBeanCustomizer`) for auto-configure
 
 ### MyBatis Extension modules
 
