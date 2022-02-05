@@ -46,9 +46,7 @@ The MyBatis Spring Native help you build quickly MyBatis applications on top of 
 * Fail bean initializing when specify `@Transactional` on mapper interface, See https://github.com/mybatis/spring-native/issues/2
 * etc ...
 
-# Modules
-
-## Integrating support modules
+# Integrating support modules
 
 Provides general configurations for running on spring-native.
 
@@ -56,25 +54,6 @@ Provides general configurations for running on spring-native.
 |------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
 | `mybatis-spring-native-core`       | Integrating module for `mybatis` and `mybatis-spring`(`mybatis-spring-boot-starter`) module basic features                                      |
 | `mybatis-spring-native-extensions` | Integrating module for extension module(using `mybatis-thymeleaf`, `mybatis-velocity`, `mybatis-freemarker` and `mybatis-dynamic-sql`) features |
-
-## Sample modules
-
-Provides examples for running the MyBatis in spring-native.
-
-| Name                                                  | Description                                                                                                                      |
-|-------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| `mybatis-spring-native-sample-simple`                 | The very simple sample application using annotation driven mapper (`@Select`/`@Insert`/etc...)                                   |
-| `mybatis-spring-native-sample-xml`                    | The very simple sample application using xml file driven mapper                                                                  |
-| `mybatis-spring-native-sample-sqlprovider`            | The very simple sample application using SQL provider driven mapper (`@SelectProvider`/`@InsertProvider`/etc...)                 |
-| `mybatis-spring-native-sample-scan`                   | The sample application using `@MapperScan` and `@MyBatisResourcesScan` annotation                                                |
-| `mybatis-spring-native-sample-dao`                    | The sample application with DAO pattern (without mapper interface)                                                               |
-| `mybatis-spring-native-sample-thymeleaf`              | The sample application using `mybatis-thymeleaf`                                                                                 |
-| `mybatis-spring-native-sample-thymeleaf-sqlgenerator` | The sample application using `SqlGenerator` provided by `mybatis-thymeleaf` without `mybatis` and `mybatis-spring` module        |
-| `mybatis-spring-native-sample-velocity`               | The sample application using `mybatis-velocity`                                                                                  |
-| `mybatis-spring-native-sample-freemarker`             | The sample application using `mybatis-freemarker`                                                                                |
-| `mybatis-spring-native-sample-cache`                  | The sample application with built-in 2nd cache feature                                                                           |
-| `mybatis-spring-native-sample-configuration`          | The sample application with customizing MyBatis's configuration using configuration properties feature(`application.properties`) |
-| `mybatis-spring-native-sample-dynamic-sql`            | The sample application using `mybatis-dynamic-sql`                                                                               |
 
 # Usage
 
@@ -166,3 +145,22 @@ e.g.)
   <!-- ... -->
 </plugin>
 ```
+
+# Samples
+
+Provides examples for running the MyBatis in spring-native.
+
+| Name                                                  | Description                                                                                                                      |
+|-------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| `mybatis-spring-native-sample-simple`                 | The very simple sample application using annotation driven mapper (`@Select`/`@Insert`/etc...)                                   |
+| `mybatis-spring-native-sample-xml`                    | The very simple sample application using xml file driven mapper                                                                  |
+| `mybatis-spring-native-sample-sqlprovider`            | The very simple sample application using SQL provider driven mapper (`@SelectProvider`/`@InsertProvider`/etc...)                 |
+| `mybatis-spring-native-sample-scan`                   | The sample application using `@MapperScan` and `@MyBatisResourcesScan` annotation                                                |
+| `mybatis-spring-native-sample-dao`                    | The sample application with DAO pattern (without mapper interface)                                                               |
+| `mybatis-spring-native-sample-thymeleaf`              | The sample application using `mybatis-thymeleaf`                                                                                 |
+| `mybatis-spring-native-sample-thymeleaf-sqlgenerator` | The sample application using `SqlGenerator` provided by `mybatis-thymeleaf` without `mybatis` and `mybatis-spring` module        |
+| `mybatis-spring-native-sample-velocity`               | The sample application using `mybatis-velocity`                                                                                  |
+| `mybatis-spring-native-sample-freemarker`             | The sample application using `mybatis-freemarker`                                                                                |
+| `mybatis-spring-native-sample-cache`                  | The sample application with built-in 2nd cache feature                                                                           |
+| `mybatis-spring-native-sample-configuration`          | The sample application with customizing MyBatis's configuration using configuration properties feature(`application.properties`) |
+| `mybatis-spring-native-sample-dynamic-sql`            | The sample application using `mybatis-dynamic-sql`                                                                               |
