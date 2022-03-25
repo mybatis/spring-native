@@ -89,7 +89,7 @@
     <mybatis-velocity.version>2.1.1</mybatis-velocity.version>
     <mybatis-freemarker.version>1.2.3</mybatis-freemarker.version>
     <mybatis-dynamic-sql.version>1.4.0</mybatis-dynamic-sql.version>
-    <spring-boot.version>2.6.4</spring-boot.version>
+    <spring-boot.version>2.6.5</spring-boot.version>
     <spring-native.version>0.11.3</spring-native.version>
   </properties>
 
