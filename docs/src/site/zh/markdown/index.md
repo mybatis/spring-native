@@ -166,3 +166,12 @@ public class MybatisSpringNativeSampleApplication {
 | `mybatis-spring-native-sample-cache`                  | 使用二级缓存的样例程序                                                                       |
 | `mybatis-spring-native-sample-configuration`          | 使用配置属性功能定制MyBatis的配置的样例程序（`application.properties` ）                              |
 | `mybatis-spring-native-sample-dynamic-sql`            | 使用 `mybatis-dynamic-sql` 的样例程序                                                    |
+
+# 文档的翻译版本
+
+可以阅读以下 MyBatis-Spring-Native 文档的翻译版本：
+
+<ul class="i18n">
+  <li class="en"><a href="./../index.html">English</a></li>
+  <li class="zh"><a href="./../zh/index.html">简体中文</a></li>
+</ul>

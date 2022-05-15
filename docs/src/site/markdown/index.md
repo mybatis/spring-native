@@ -164,3 +164,12 @@ Provides examples for running the MyBatis in spring-native.
 | `mybatis-spring-native-sample-cache`                  | The sample application with built-in 2nd cache feature                                                                           |
 | `mybatis-spring-native-sample-configuration`          | The sample application with customizing MyBatis's configuration using configuration properties feature(`application.properties`) |
 | `mybatis-spring-native-sample-dynamic-sql`            | The sample application using `mybatis-dynamic-sql`                                                                               |
+
+# Translations
+
+Users can read about MyBatis-Spring-Native in the following translations:
+
+<ul class="i18n">
+  <li class="en"><a href="./index.html">English</a></li>
+  <li class="zh"><a href="./zh/index.html">简体中文</a></li>
+</ul>

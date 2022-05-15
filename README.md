@@ -29,6 +29,10 @@ The project that the MyBatis integration with Spring Native feature.
 * [Quick Start](https://github.com/mybatis/spring-native/wiki/Quick-Start)
 * [Reference documentation](docs/src/site/markdown/index.md)
 
+### Translations
+
+* [Reference documentation (简体中文)](docs/src/site/zh/markdown/index.md)
+
 ## How to install on your application
 
 Specify the `mybatis-spring-native-core` on `pom.xml` as follows:

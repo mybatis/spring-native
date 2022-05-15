@@ -111,6 +111,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
           <configuration>
+            <locales>en,zh_CN</locales>
             <!-- Build using files that replace a placeholder using project properties -->
             <siteDirectory>${project.build.directory}/site-src</siteDirectory>
           </configuration>
