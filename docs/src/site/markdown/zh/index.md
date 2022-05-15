@@ -23,7 +23,7 @@ MyBatis Spring Native 帮助你在 [Spring Native](https://github.com/spring-pro
 - 自动扫描带有 `@Mapper` 的 mapper 接口
 - 使用配置文件（`application.properties`）来配置 Mybatis 的行为
 - 从依赖注入容器中使用 MyBatis 的组件(`Interceptor`, `TypeHandler`, `LanguageDriver` 与 `DatabaseIdProvider`)
-- 从依赖注入容器中使用配置组件 （实现了 `ConfigurationCustomizer` 或者 `SqlSessionFactoryBeanCustomizer`的类）
+- 从依赖注入容器中使用配置组件 （实现了 `ConfigurationCustomizer` 或者 `SqlSessionFactoryBeanCustomizer` 的类）
 
 ### MyBatis 扩展模块
 
@@ -35,7 +35,7 @@ MyBatis Spring Native 帮助你在 [Spring Native](https://github.com/spring-pro
 ### MyBatis Spring Native
 
 - 在编译时可以使用 `@MyBatisResourcesScan` 来扫描类型别名，类型处理器和 XML 映射文件（可以替代properties中相关的配置）
-- 在编译时可以使用 `@MyBatisResourcesScan` 来扫描任意的类作为 reflection hint
+- 在编译时可以使用 `@MyBatisResourcesScan` 来扫描任意的类作为反射 hint
 - 在编译时可以使用 `@MyBatisResourcesScan` 来扫描任意的资源文件作为 resource hint
 - 自动向 native hint(reflection hint) 注册参数类型，返回值类型和 sql provider 类型（但仅支持标准模式）
 
@@ -77,22 +77,22 @@ public class MybatisSpringNativeSampleApplication {
 
 **属性:**
 
-| 属性                         | 描述                                                                    |
-| -------------------------- | --------------------------------------------------------------------- |
-| `typeAliasesPackages`      | Specify package names for scanning type aliases                       |
-| `typeAliasesSupperType`    | Specify filter type(super class) for scanning type aliases            |
-| `typeHandlerPackages`      | Specify package names for scanning type handlers                      |
-| `mapperLocationPatterns`   | Specify location patterns for scanning mapper xml files               |
-| `reflectionTypePackages`   | Specify package names for adding as reflection hint type              |
-| `reflectionTypeSuperType`  | Specify filter type(super class) for scanning reflection type         |
-| `typeAccesses`             | Specify access scopes for applying scanned classes to reflection hint |
-| `resourceLocationPatterns` | Specify location patterns for adding as resource hint file            |
+| 属性                         | 描述                      |
+| -------------------------- | ----------------------- |
+| `typeAliasesPackages`      | 为扫描类型别名指定包名             |
+| `typeAliasesSupperType`    | 为扫描类型别名指定过滤类型（父类）       |
+| `typeHandlerPackages`      | 为扫描类型别名指定过滤类型（父类）       |
+| `mapperLocationPatterns`   | 为扫描 XML 映射文件指定路径        |
+| `reflectionTypePackages`   | 为增加反射 hint 类型指定包名       |
+| `reflectionTypeSuperType`  | 为扫描类型别名指定反射类型（父类）       |
+| `typeAccesses`             | 指定访问作用域，将扫描的类应用于反射 hint |
+| `resourceLocationPatterns` | 为增加资源 hint 文件指定路径       |
 
-# Notices
+# 注意
 
-## Using `@MapperScan`
+## `@MapperScan` 的使用
 
-If you use the `@MapperScan`, you should be specified either the `sqlSessionTemplateRef` or `sqlSessionFactoryRef` as follows:
+如果你使用 `@MapperScan`, 你需要指定 `sqlSessionTemplateRef` or `sqlSessionFactoryRef` ，例如：
 
 ```java
 @MapperScan(basePackages = "com.example.mapper", sqlSessionTemplateRef = "sqlSessionTemplate")
@@ -102,22 +102,22 @@ public class MybatisSpringNativeSampleApplication {
 }
 ```
 
-## Using 2nd cache
+## 使用二级缓存
 
-If you use the 2nd cache feature, you need to configure serialization hints.
-And we recommend defining the [JEP-290 serial filter](https://docs.oracle.com/en/java/javase/11/core/serialization-filtering1.html).
+如果你使用二级缓存， 你需要配置 hints 的序列化。
+我们推荐使用  [JEP-290 serial filter](https://docs.oracle.com/en/java/javase/11/core/serialization-filtering1.html).
 
-> **IMPORTANT:**
+> **重要：**
 > 
-> Please consider adding definition of JEP-290 serial filter when following warning log will output.
+> 当你遇到下面的警告日志，请考虑使用 [JEP-290 serial filter](https://docs.oracle.com/en/java/javase/11/core/serialization-filtering1.html).
 > 
 > ```
 > 2022-01-16 13:18:21.045  WARN 21917 --- [           main] o.apache.ibatis.io.SerialFilterChecker   : As you are using functionality that deserializes object streams, it is recommended to define the JEP-290 serial filter. Please refer to https://docs.oracle.com/pls/topic/lookup?ctx=javase15&id=GUID-8296D8E8-2B93-4B9A-856E-0A65AF9B8C66
 > ```
 
-### How to configure serialization hints
+### 如何配置 hints 的序列化
 
-Configure using `@SerializationHint`.
+使用 `@SerializationHint` 来配置。
 
 ```java
 @NativeHint(serializables = @SerializationHint(types = { ArrayList.class, City.class, String.class, Integer.class, Number.class })) // Adding @SerializationHint
@@ -127,11 +127,11 @@ public class MybatisSpringNativeSampleApplication {
 }
 ```
 
-### How to define JEP-290 serial filter
+### 如何定义 JEP-290 serial filter
 
-Define `-Djdk.serialFilter`(system properties) on `buildArgs` of `native-maven-plugin` at `pom.xml`.
+在 `pom.xml` 中，在 `buildArgs` 的 `native-maven-plugin`上定义 `-Djdk.serialFilter` （系统属性）
 
-e.g.)
+例如：
 
 ```xml
 <plugin>
@@ -148,21 +148,21 @@ e.g.)
 </plugin>
 ```
 
-# Samples
+# 样例
 
-Provides examples for running the MyBatis in spring-native.
+提供了在 spring-native 中运行 MyBatis 的一些例子。
 
-| Name                                                  | Description                                                                                                                      |
-| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `mybatis-spring-native-sample-simple`                 | The very simple sample application using annotation driven mapper (`@Select`/`@Insert`/etc...)                                   |
-| `mybatis-spring-native-sample-xml`                    | The very simple sample application using xml file driven mapper                                                                  |
-| `mybatis-spring-native-sample-sqlprovider`            | The very simple sample application using SQL provider driven mapper (`@SelectProvider`/`@InsertProvider`/etc...)                 |
-| `mybatis-spring-native-sample-scan`                   | The sample application using `@MapperScan` and `@MyBatisResourcesScan` annotation                                                |
-| `mybatis-spring-native-sample-dao`                    | The sample application with DAO pattern (without mapper interface)                                                               |
-| `mybatis-spring-native-sample-thymeleaf`              | The sample application using `mybatis-thymeleaf`                                                                                 |
-| `mybatis-spring-native-sample-thymeleaf-sqlgenerator` | The sample application using `SqlGenerator` provided by `mybatis-thymeleaf` without `mybatis` and `mybatis-spring` module        |
-| `mybatis-spring-native-sample-velocity`               | The sample application using `mybatis-velocity`                                                                                  |
-| `mybatis-spring-native-sample-freemarker`             | The sample application using `mybatis-freemarker`                                                                                |
-| `mybatis-spring-native-sample-cache`                  | The sample application with built-in 2nd cache feature                                                                           |
-| `mybatis-spring-native-sample-configuration`          | The sample application with customizing MyBatis's configuration using configuration properties feature(`application.properties`) |
-| `mybatis-spring-native-sample-dynamic-sql`            | The sample application using `mybatis-dynamic-sql`                                                                               |
+| 名称                                                    | 描述                                                                                |
+| ----------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `mybatis-spring-native-sample-simple`                 | 非常简易的示例，使用注解驱动映射的应用程序 (`@Select`/`@Insert`/etc...)                                |
+| `mybatis-spring-native-sample-xml`                    | 非常简易的示例，使用 XML 驱动映射的应用程序                                                          |
+| `mybatis-spring-native-sample-sqlprovider`            | 非常简易的示例，使用 sql provider 驱动映射的应用程序 (`@SelectProvider`/`@InsertProvider`/etc...)    |
+| `mybatis-spring-native-sample-scan`                   | 使用 `@MapperScan` 和`@MyBatisResourcesScan` 注解的样例程序                                 |
+| `mybatis-spring-native-sample-dao`                    | 使用 DAO 模式的样例程序 （没有 mapper 接口）                                                     |
+| `mybatis-spring-native-sample-thymeleaf`              | 使用 `mybatis-thymeleaf` 的样例程序                                                      |
+| `mybatis-spring-native-sample-thymeleaf-sqlgenerator` | 使用 `mybatis-thymeleaf` 提供的 `SqlGenerator`的样例程序，没有 `mybatis` 和 `mybatis-spring` 模块 |
+| `mybatis-spring-native-sample-velocity`               | 使用 `mybatis-velocity` 的样例程序                                                       |
+| `mybatis-spring-native-sample-freemarker`             | 使用 `mybatis-freemarker` 的样例程序                                                     |
+| `mybatis-spring-native-sample-cache`                  | 使用二级缓存的样例程序                                                                       |
+| `mybatis-spring-native-sample-configuration`          | 使用配置属性功能定制MyBatis的配置的样例程序（`application.properties` ）                              |
+| `mybatis-spring-native-sample-dynamic-sql`            | 使用 `mybatis-dynamic-sql` 的样例程序                                                    |
