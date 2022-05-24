@@ -82,7 +82,7 @@
     <maven.compiler.testSource>${java.version}</maven.compiler.testSource>
 
     <!-- Dependencies artifact version -->
-    <mybatis.version>3.5.9</mybatis.version>
+    <mybatis.version>3.5.10</mybatis.version>
     <mybatis-spring.version>2.0.7</mybatis-spring.version>
     <mybatis-spring-boot.version>2.2.2</mybatis-spring-boot.version>
     <mybatis-thymeleaf.version>1.0.3</mybatis-thymeleaf.version>
