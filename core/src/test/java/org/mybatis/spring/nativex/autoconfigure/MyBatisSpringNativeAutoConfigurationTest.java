@@ -56,7 +56,7 @@ class MyBatisSpringNativeAutoConfigurationTest {
     this.context.register(EmptyConfiguration.class);
     this.context.refresh();
     SqlSessionFactory factory = this.context.getBean(SqlSessionFactory.class);
-    Assertions.assertThat(factory.getConfiguration().getTypeAliasRegistry().getTypeAliases()).hasSize(72);
+    Assertions.assertThat(factory.getConfiguration().getTypeAliasRegistry().getTypeAliases()).hasSize(80);
     Assertions.assertThat(factory.getConfiguration().getTypeHandlerRegistry().getTypeHandlers()).hasSize(40);
     Assertions.assertThat(factory.getConfiguration().getMappedStatementNames()).isEmpty();
   }
@@ -67,7 +67,7 @@ class MyBatisSpringNativeAutoConfigurationTest {
     this.context.refresh();
     SqlSessionFactory factory = this.context.getBean(SqlSessionFactory.class);
     {
-      Assertions.assertThat(factory.getConfiguration().getTypeAliasRegistry().getTypeAliases()).hasSize(74);
+      Assertions.assertThat(factory.getConfiguration().getTypeAliasRegistry().getTypeAliases()).hasSize(82);
       Assertions.assertThat(factory.getConfiguration().getTypeAliasRegistry().resolveAlias("city"))
           .isEqualTo(City.class);
       Assertions.assertThat(factory.getConfiguration().getTypeAliasRegistry().resolveAlias("country"))
@@ -91,7 +91,7 @@ class MyBatisSpringNativeAutoConfigurationTest {
     this.context.register(SingleConfigurationWithoutMapperLocation.class);
     this.context.refresh();
     SqlSessionFactory factory = this.context.getBean(SqlSessionFactory.class);
-    Assertions.assertThat(factory.getConfiguration().getTypeAliasRegistry().getTypeAliases()).hasSize(74);
+    Assertions.assertThat(factory.getConfiguration().getTypeAliasRegistry().getTypeAliases()).hasSize(82);
     Assertions.assertThat(factory.getConfiguration().getTypeHandlerRegistry().getTypeHandlers()).hasSize(43);
     Assertions.assertThat(factory.getConfiguration().getMappedStatementNames()).isEmpty();
   }
@@ -102,7 +102,7 @@ class MyBatisSpringNativeAutoConfigurationTest {
     this.context.refresh();
     SqlSessionFactory factory = this.context.getBean(SqlSessionFactory.class);
     {
-      Assertions.assertThat(factory.getConfiguration().getTypeAliasRegistry().getTypeAliases()).hasSize(79);
+      Assertions.assertThat(factory.getConfiguration().getTypeAliasRegistry().getTypeAliases()).hasSize(87);
       Assertions.assertThat(factory.getConfiguration().getTypeAliasRegistry().resolveAlias("city"))
           .isEqualTo(City.class);
       Assertions.assertThat(factory.getConfiguration().getTypeAliasRegistry().resolveAlias("country"))
