@@ -49,9 +49,8 @@ public interface CityMapper
   List<City> selectMany(SelectStatementProvider selectStatement);
 
   default void insert(City city) {
-    MyBatis3Utils.insert(this::insert, city, CityTable.INSTANCE,
-        c -> c.map(CityTable.INSTANCE.id).toProperty("id").map(CityTable.INSTANCE.name).toProperty("name")
-            .map(CityTable.INSTANCE.state).toProperty("state").map(CityTable.INSTANCE.country).toProperty("country"));
+    MyBatis3Utils.insert(this::insert, city, CityTable.INSTANCE, c -> c.map(CityTable.INSTANCE.name).toProperty("name")
+        .map(CityTable.INSTANCE.state).toProperty("state").map(CityTable.INSTANCE.country).toProperty("country"));
   }
 
   default Collection<City> findAll() {
