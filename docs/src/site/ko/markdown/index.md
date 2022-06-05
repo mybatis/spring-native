@@ -172,6 +172,7 @@ Define `-Djdk.serialFilter`(system properties) on `buildArgs` of `native-maven-p
 마이바티스-스프링-네이티브에 대하여 다음 언어로 확인 가능합니다:
 
 <ul class="i18n">
-  <li class="en"><a href="./index.html">English</a></li>
-  <li class="ko"><a href="./ko/index.html">한국어</a></li>
+  <li class="en"><a href="./../index.html">English</a></li>
+  <li class="zh"><a href="./../zh/index.html">简体中文</a></li>
+  <li class="ko"><a href="./../ko/index.html">한국어</a></li>
 </ul>
