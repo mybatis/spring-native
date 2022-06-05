@@ -33,7 +33,7 @@ jobs:
       - name: Set up GraalVM
         uses: graalvm/setup-graalvm@v1
         with:
-          version: 'latest'
+          version: 'dev'
           java-version: ${{ matrix.java }}
           components: 'native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
