@@ -256,9 +256,9 @@ public class MyBatisScannedResourcesHolder {
 
     private Set<String> scanResources(String[] mapperLocationPatterns) {
       try {
-        String baseUri = new ClassPathResource("/").getURI().toString();
+        String baseUrl = new ClassPathResource("/").getURL().toString();
         return Stream.of(mapperLocationPatterns).flatMap(location -> Stream.of(getResources(location)))
-            .map(x -> toPath(x, baseUri)).collect(Collectors.toSet());
+            .map(x -> toPath(x, baseUrl)).collect(Collectors.toSet());
       } catch (IOException e) {
         throw new UncheckedIOException(e);
       }
@@ -273,14 +273,14 @@ public class MyBatisScannedResourcesHolder {
       }
     }
 
-    private String toPath(Resource resource, String baseUri) {
+    private String toPath(Resource resource, String baseUrl) {
       try {
-        String uri = resource.getURI().toString();
-        String path = uri;
-        if (uri.startsWith(baseUri)) {
-          path = uri.replace(baseUri, "");
-        } else if (uri.contains(".jar!")) {
-          path = JAR_RESOURCE_PREFIX_PATTERN.matcher(uri).replaceFirst("");
+        String url = resource.getURL().toString();
+        String path = url;
+        if (url.startsWith(baseUrl)) {
+          path = url.replace(baseUrl, "");
+        } else if (url.contains(".jar!")) {
+          path = JAR_RESOURCE_PREFIX_PATTERN.matcher(url).replaceFirst("");
         }
         return path;
       } catch (IOException e) {
