@@ -18,6 +18,8 @@ package org.mybatis.spring.nativex;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.lang.reflect.Modifier;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
@@ -281,11 +283,27 @@ public class MyBatisScannedResourcesHolder {
           path = url.replace(baseUrl, "");
         } else if (url.contains(".jar!")) {
           path = JAR_RESOURCE_PREFIX_PATTERN.matcher(url).replaceFirst("");
+        } else {
+          path = determineRelativePath(url);
         }
         return path;
       } catch (IOException e) {
         throw new UncheckedIOException(e);
       }
+    }
+
+    private String determineRelativePath(String url) {
+      Path path = Paths.get(url);
+      StringBuilder sb = new StringBuilder();
+      for (int i = path.getNameCount() - 1; i >= 0; i--) {
+        sb.insert(0, path.getName(i));
+        String relativePath = sb.toString();
+        if (RESOURCE_PATTERN_RESOLVER.getResource(relativePath).exists()) {
+          return relativePath;
+        }
+        sb.insert(0, path.getFileSystem().getSeparator());
+      }
+      return url;
     }
 
   }
