@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.lang.reflect.Modifier;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
@@ -284,7 +283,7 @@ public class MyBatisScannedResourcesHolder {
         } else if (url.contains(".jar!")) {
           path = JAR_RESOURCE_PREFIX_PATTERN.matcher(url).replaceFirst("");
         } else {
-          path = determineRelativePath(url);
+          path = determineRelativePath(resource);
         }
         return path;
       } catch (IOException e) {
@@ -292,8 +291,8 @@ public class MyBatisScannedResourcesHolder {
       }
     }
 
-    private String determineRelativePath(String url) {
-      Path path = Paths.get(url);
+    private String determineRelativePath(Resource resource) throws IOException {
+      Path path = resource.getFile().toPath();
       StringBuilder sb = new StringBuilder();
       for (int i = path.getNameCount() - 1; i >= 0; i--) {
         sb.insert(0, path.getName(i));
@@ -301,9 +300,9 @@ public class MyBatisScannedResourcesHolder {
         if (RESOURCE_PATTERN_RESOLVER.getResource(relativePath).exists()) {
           return relativePath;
         }
-        sb.insert(0, path.getFileSystem().getSeparator());
+        sb.insert(0, '/');
       }
-      return url;
+      return resource.getURL().toString();
     }
 
   }
