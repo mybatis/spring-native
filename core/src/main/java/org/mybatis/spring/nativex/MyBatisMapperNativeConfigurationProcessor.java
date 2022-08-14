@@ -105,8 +105,8 @@ public class MyBatisMapperNativeConfigurationProcessor implements BeanFactoryNat
   }
 
   @SafeVarargs
-  private <T extends Annotation> void registerSqlProviderTypes(Method method, NativeConfigurationRegistry registry,
-      Class<T> annotationType, Function<T, Class<?>>... providerTypeResolvers) {
+  private final <T extends Annotation> void registerSqlProviderTypes(Method method,
+      NativeConfigurationRegistry registry, Class<T> annotationType, Function<T, Class<?>>... providerTypeResolvers) {
     for (T annotation : method.getAnnotationsByType(annotationType)) {
       for (Function<T, Class<?>> providerTypeResolver : providerTypeResolvers) {
         registerReflectionTypeIfNecessary(providerTypeResolver.apply(annotation), registry);
