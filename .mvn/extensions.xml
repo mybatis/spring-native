@@ -17,9 +17,9 @@
 
 -->
 <extensions>
-  <extension>
-    <groupId>fr.jcgay.maven</groupId>
-    <artifactId>maven-profiler</artifactId>
-    <version>3.2</version>
-  </extension>
+    <extension>
+      <groupId>fr.jcgay.maven</groupId>
+      <artifactId>maven-profiler</artifactId>
+      <version>3.2</version>
+    </extension>
 </extensions>
