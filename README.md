@@ -11,7 +11,7 @@
 [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/https/oss.sonatype.org/org.mybatis.spring.native/mybatis-spring-native.svg)](https://oss.sonatype.org/content/repositories/snapshots/org/mybatis/spring/native/mybatis-spring-native/)
 [![License](https://img.shields.io/:license-apache-brightgreen.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
-![mybatis-spring](http://mybatis.github.io/images/mybatis-logo.png)
+![mybatis-spring](https://mybatis.org/images/mybatis-logo.png)
 
 The project that the MyBatis integration with Spring Native feature.
 
