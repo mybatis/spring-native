@@ -88,6 +88,9 @@
     <mybatis-dynamic-sql.version>1.4.0</mybatis-dynamic-sql.version>
     <spring-boot.version>2.7.3</spring-boot.version>
     <spring-native.version>0.12.1</spring-native.version>
+
+    <!-- Reproducible Builds -->
+    <project.build.outputTimestamp>1757561022</project.build.outputTimestamp>
   </properties>
 
   <build>
