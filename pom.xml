@@ -81,7 +81,7 @@
     <!-- Dependencies artifact version -->
     <mybatis.version>3.5.11</mybatis.version>
     <mybatis-spring.version>2.1.0</mybatis-spring.version>
-    <mybatis-spring-boot.version>2.2.2</mybatis-spring-boot.version>
+    <mybatis-spring-boot.version>2.3.0</mybatis-spring-boot.version>
     <mybatis-thymeleaf.version>1.0.4</mybatis-thymeleaf.version>
     <mybatis-velocity.version>2.1.1</mybatis-velocity.version>
     <mybatis-freemarker.version>1.2.3</mybatis-freemarker.version>
