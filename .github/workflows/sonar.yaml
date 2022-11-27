@@ -2,7 +2,7 @@ name: SonarCloud
 on:
   push:
     branches:
-      - master
+      - 0.1.x
 jobs:
   build:
     if: github.repository_owner == 'mybatis'
