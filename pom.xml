@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-       Copyright 2022 the original author or authors.
+       Copyright 2022-2023 the original author or authors.
 
        Licensed under the Apache License, Version 2.0 (the "License");
        you may not use this file except in compliance with the License.
@@ -86,8 +86,8 @@
     <mybatis-velocity.version>2.1.2</mybatis-velocity.version>
     <mybatis-freemarker.version>1.2.4</mybatis-freemarker.version>
     <mybatis-dynamic-sql.version>1.4.1</mybatis-dynamic-sql.version>
-    <spring-boot.version>2.7.5</spring-boot.version>
     <spring-native.version>0.12.1</spring-native.version>
+    <spring-boot.version>2.7.9</spring-boot.version>
 
     <!-- Reproducible Builds -->
     <project.build.outputTimestamp>1757561022</project.build.outputTimestamp>
