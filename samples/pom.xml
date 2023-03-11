@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-       Copyright 2022 the original author or authors.
+       Copyright 2022-2023 the original author or authors.
 
        Licensed under the Apache License, Version 2.0 (the "License");
        you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@
     <groupId>org.mybatis.spring.native</groupId>
     <artifactId>mybatis-spring-native</artifactId>
     <version>0.1.0-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>mybatis-spring-native-samples</artifactId>
@@ -32,16 +31,13 @@
   <packaging>pom</packaging>
 
   <properties>
-    <animal.sniffer.skip>true</animal.sniffer.skip>
     <enforcer.skip>true</enforcer.skip>
     <maven.deploy.skip>true</maven.deploy.skip>
     <maven.test.skip>true</maven.test.skip>
     <maven.site.skip>true</maven.site.skip>
+
+    <native-buildtools.version>0.9.13</native-buildtools.version>
   </properties>
-  
-  <build>
-    <finalName>${project.artifactId}</finalName>
-  </build>
 
   <modules>
     <module>simple</module>
@@ -58,4 +54,17 @@
     <module>dynamic-sql</module>
   </modules>
 
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.graalvm.buildtools</groupId>
+          <artifactId>native-maven-plugin</artifactId>
+          <version>${native-buildtools.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
+    <finalName>${project.artifactId}</finalName>
+  </build>
 </project>
