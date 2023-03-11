@@ -36,11 +36,9 @@
     <maven.deploy.skip>true</maven.deploy.skip>
     <maven.test.skip>true</maven.test.skip>
     <maven.site.skip>true</maven.site.skip>
+
+    <native-buildtools.version>0.9.13</native-buildtools.version>
   </properties>
-  
-  <build>
-    <finalName>${project.artifactId}</finalName>
-  </build>
 
   <modules>
     <module>simple</module>
@@ -57,4 +55,17 @@
     <module>dynamic-sql</module>
   </modules>
 
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.graalvm.buildtools</groupId>
+          <artifactId>native-maven-plugin</artifactId>
+          <version>${native-buildtools.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
+    <finalName>${project.artifactId}</finalName>
+  </build>
 </project>

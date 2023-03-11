@@ -125,7 +125,6 @@
       <id>native</id>
       <properties>
         <repackage.classifier>exec</repackage.classifier>
-        <native-buildtools.version>0.9.13</native-buildtools.version>
       </properties>
       <dependencies>
         <dependency>
@@ -139,7 +138,6 @@
           <plugin>
             <groupId>org.graalvm.buildtools</groupId>
             <artifactId>native-maven-plugin</artifactId>
-            <version>${native-buildtools.version}</version>
             <extensions>true</extensions>
             <executions>
               <execution>
