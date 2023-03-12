@@ -173,16 +173,6 @@
         <version>${spring-native.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.mybatis.spring.native</groupId>
-        <artifactId>mybatis-spring-native-core</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mybatis.spring.native</groupId>
-        <artifactId>mybatis-spring-native-extensions</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>${spring-boot.version}</version>
