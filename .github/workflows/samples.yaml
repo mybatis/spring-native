@@ -59,7 +59,12 @@ jobs:
       - name: Run with executable jar
         run: java -jar ./samples/${{ matrix.sample }}/target/mybatis-spring-native-sample-${{ matrix.sample }}-exec.jar
       - name: Verify running with native image for ubuntu
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.sample != 'cache' }}
         run: |
           ./samples/${{ matrix.sample }}/target/mybatis-spring-native-sample-${{ matrix.sample }} --logging.pattern.console="[%level] %m%n" --spring.main.banner-mode=off --logging.level.org.mybatis.spring.nativex.sample=off | tee actual-console.log
+          diff actual-console.log ./samples/${{ matrix.sample }}/src/test/resources/expected-console.log
+      - name: Verify running with native image for ubuntu
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.sample == 'cache' }}
+        run: |
+          ./samples/${{ matrix.sample }}/target/mybatis-spring-native-sample-${{ matrix.sample }} --logging.pattern.console="[%level] %m%n" --spring.main.banner-mode=off --logging.level.org.mybatis.spring.nativex.sample=off -Djdk.serialFilter='org.mybatis.spring.nativex.sample.cache.*;java.util.*;java.lang.*;!*' | tee actual-console.log
           diff actual-console.log ./samples/${{ matrix.sample }}/src/test/resources/expected-console.log
