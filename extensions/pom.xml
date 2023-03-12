@@ -38,6 +38,7 @@
     <dependency>
       <groupId>org.mybatis.spring.native</groupId>
       <artifactId>mybatis-spring-native-core</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.mybatis.scripting</groupId>

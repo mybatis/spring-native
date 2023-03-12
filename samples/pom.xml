@@ -40,19 +40,34 @@
   </properties>
 
   <modules>
-    <module>simple</module>
-    <module>xml</module>
-    <module>sqlprovider</module>
-    <module>scan</module>
+    <module>cache</module>
+    <module>configuration</module>
     <module>dao</module>
+    <module>dynamic-sql</module>
+    <module>freemarker</module>
+    <module>scan</module>
+    <module>simple</module>
+    <module>sqlprovider</module>
     <module>thymeleaf</module>
     <module>thymeleaf-sqlgenerator</module>
     <module>velocity</module>
-    <module>freemarker</module>
-    <module>cache</module>
-    <module>configuration</module>
-    <module>dynamic-sql</module>
+    <module>xml</module>
   </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.mybatis.spring.native</groupId>
+        <artifactId>mybatis-spring-native-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mybatis.spring.native</groupId>
+        <artifactId>mybatis-spring-native-extensions</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <build>
     <pluginManagement>
