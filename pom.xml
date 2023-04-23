@@ -85,7 +85,7 @@
     <mybatis-thymeleaf.version>1.0.4</mybatis-thymeleaf.version>
     <mybatis-velocity.version>2.1.2</mybatis-velocity.version>
     <mybatis-freemarker.version>1.2.4</mybatis-freemarker.version>
-    <mybatis-dynamic-sql.version>1.4.1</mybatis-dynamic-sql.version>
+    <mybatis-dynamic-sql.version>1.5.0</mybatis-dynamic-sql.version>
     <spring-boot.version>2.7.10</spring-boot.version>
     <spring-native.version>0.12.2</spring-native.version>
 
