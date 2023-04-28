@@ -26,7 +26,11 @@ import java.util.stream.Stream;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mybatis.spring.nativex.component.*;
+import org.mybatis.spring.nativex.component.AbstractTypeHandler;
+import org.mybatis.spring.nativex.component.BarService;
+import org.mybatis.spring.nativex.component.BarTypeHandler;
+import org.mybatis.spring.nativex.component.FooTypeHandler;
+import org.mybatis.spring.nativex.component.TypeHandlers;
 import org.mybatis.spring.nativex.component2.AnyTypeHandler;
 import org.mybatis.spring.nativex.entity.City;
 import org.mybatis.spring.nativex.entity.Country;
