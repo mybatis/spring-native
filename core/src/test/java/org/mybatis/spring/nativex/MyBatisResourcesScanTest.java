@@ -15,6 +15,11 @@
  */
 package org.mybatis.spring.nativex;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -33,6 +38,7 @@ import org.mybatis.spring.nativex.marker.StandardEntity;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.nativex.hint.TypeAccess;
+import org.springframework.util.ClassUtils;
 
 class MyBatisResourcesScanTest {
 
@@ -181,6 +187,26 @@ class MyBatisResourcesScanTest {
   }
 
   @Test
+  void scanResourceLocationsWithGradleBuildOutput() throws Exception {
+    String currentDir = Objects.requireNonNull(getClass().getResource("")).getPath();
+    String projectDir = currentDir.substring(0, currentDir.indexOf("/target/test-classes"));
+    SimulateGradleBuildResourcesURLClassLoader classLoader = new SimulateGradleBuildResourcesURLClassLoader(
+        projectDir + "/src/test/gradle_resources/", getClass().getClassLoader());
+    ClassUtils.overrideThreadContextClassLoader(classLoader);
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+    context.registerBean(ConfigurationForScanResourceLocationsWithGradleOutputResources.class);
+    context.refresh();
+    MyBatisScannedResourcesHolder holder = context.getBean(MyBatisScannedResourcesHolder.class);
+    Assertions.assertThat(holder.getTypeAliasesClasses()).isEmpty();
+    Assertions.assertThat(holder.getMapperLocations()).isEmpty();
+    Assertions.assertThat(holder.getTypeHandlerClasses()).isEmpty();
+    Assertions.assertThat(holder.getReflectionClasses()).isEmpty();
+    Assertions.assertThat(holder.getResourceLocations())
+        .containsExactlyInAnyOrder("mapper/gradle_output/GradleOutputMapper.xml");
+    Assertions.assertThat(holder.getReflectionTypeAccesses()).isEmpty();
+  }
+
+  @Test
   void scanResourceLocationsWithMultiPattern() {
     AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
     context.registerBean(ConfigurationForScanResourceLocationsWithMultiPattern.class);
@@ -277,6 +303,11 @@ class MyBatisResourcesScanTest {
   static class ConfigurationForScanResourceLocations {
   }
 
+  @MyBatisResourcesScan(resourceLocationPatterns = { "mapper/gradle_output/*.*" })
+  @Configuration
+  static class ConfigurationForScanResourceLocationsWithGradleOutputResources {
+  }
+
   @MyBatisResourcesScan(resourceLocationPatterns = { "mapper/sub2/*.*", "org/apache/ibatis/builder/xml/*.dtd" })
   @Configuration
   static class ConfigurationForScanResourceLocationsWithMultiPattern {
@@ -289,6 +320,20 @@ class MyBatisResourcesScanTest {
   @MyBatisResourcesScan(resourceLocationPatterns = "mapper/sub2/*.*")
   @Configuration
   static class ConfigurationForRepeat {
+
+  }
+
+  private static class SimulateGradleBuildResourcesURLClassLoader extends URLClassLoader {
+
+    public SimulateGradleBuildResourcesURLClassLoader(String path, ClassLoader classLoader)
+        throws MalformedURLException {
+      super(new URL[] { new File(path).toURI().toURL() }, classLoader);
+    }
+
+    @Override
+    public void addURL(URL url) {
+      super.addURL(url);
+    }
 
   }
 
