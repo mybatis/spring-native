@@ -36,7 +36,7 @@
     <maven.test.skip>true</maven.test.skip>
     <maven.site.skip>true</maven.site.skip>
 
-    <native-buildtools.version>0.9.26</native-buildtools.version>
+    <native-buildtools.version>0.9.27</native-buildtools.version>
   </properties>
 
   <modules>
