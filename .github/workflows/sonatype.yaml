@@ -1,8 +1,10 @@
 name: Sonatype
+
 on:
   push:
     branches:
       - master
+
 jobs:
   build:
     if: github.repository_owner == 'mybatis' && ! contains(toJSON(github.event.head_commit.message), '[maven-release-plugin]')
@@ -22,7 +24,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Deploy to Sonatype
-        run: ./mvnw deploy -DskipTests -B --settings ./.mvn/settings.xml -Dlicense.skip=true
+        run: ./mvnw deploy -DskipTests -B -V --no-transfer-progress --settings ./.mvn/settings.xml -Dlicense.skip=true
         env:
           CI_DEPLOY_USERNAME: ${{ secrets.CI_DEPLOY_USERNAME }}
           CI_DEPLOY_PASSWORD: ${{ secrets.CI_DEPLOY_PASSWORD }}

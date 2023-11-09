@@ -1,28 +1,26 @@
 name: Java CI
-on:
-  push:
-  pull_request:
+
+on: [workflow_dispatch, push, pull_request]
+
 jobs:
-  build:
-    name: Verify on ${{ matrix.os }} (Java ${{ matrix.java }})
+  test:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os:
-          - 'ubuntu-latest'
-          - 'windows-latest'
-          - 'macos-latest'
-        java:
-          - 21
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        java: [21, 22-ea]
+        distribution: ['temurin']
       fail-fast: false
-      max-parallel: 6
+      max-parallel: 4
+    name: Test JDK ${{ matrix.java }}, ${{ matrix.os }}
+
     steps:
       - uses: actions/checkout@v4
-      - name: Set up JDK
+      - name: Set up JDK ${{ matrix.java }} ${{ matrix.distribution }}
         uses: actions/setup-java@v3
         with:
           java-version: ${{ matrix.java }}
-          distribution: 'zulu'
+          distribution: ${{ matrix.distribution }}
       - name: Cache local Maven repository
         uses: actions/cache@v3
         with:
@@ -30,7 +28,5 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - name: Show a Java version
-        run: java -version
-      - name: Verify a mybatis-spring-native-core
-        run: ./mvnw -U -pl .,core,extensions clean verify -D"license.skip=true"
+      - name: Test with Maven
+        run: ./mvnw -pl core,extensions test -B -V --no-transfer-progress -D"license.skip=true"
