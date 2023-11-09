@@ -16,8 +16,7 @@
        limitations under the License.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -27,8 +26,8 @@
   </parent>
 
   <artifactId>mybatis-spring-native-extensions</artifactId>
-  <description>MyBatis integration with Spring Native feature for extension modules(scripting, cache, and more)</description>
   <name>mybatis-spring-native-extensions</name>
+  <description>MyBatis integration with Spring Native feature for extension modules(scripting, cache, and more)</description>
 
   <properties>
     <module.name>org.mybatis.spring.nativex.extensions</module.name>

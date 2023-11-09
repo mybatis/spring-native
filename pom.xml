@@ -16,8 +16,7 @@
        limitations under the License.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -37,11 +36,25 @@
   <url>https://www.mybatis.org/spring-native/</url>
   <inceptionYear>2022</inceptionYear>
 
+  <contributors>
+    <contributor>
+      <name>Kazuki Shimizu</name>
+      <email>kazuki43zoo@gmail.com</email>
+    </contributor>
+  </contributors>
+
+  <modules>
+    <module>core</module>
+    <module>extensions</module>
+    <module>samples</module>
+    <module>docs</module>
+  </modules>
+
   <scm>
     <connection>scm:git:git@github.com:mybatis/spring-native.git</connection>
     <developerConnection>scm:git:git@github.com:mybatis/spring-native.git</developerConnection>
-    <url>https://github.com/mybatis/spring-native/tree/master</url>
     <tag>HEAD</tag>
+    <url>https://github.com/mybatis/spring-native/tree/master</url>
   </scm>
   <issueManagement>
     <system>GitHub Issue Management</system>
@@ -58,20 +71,6 @@
       <url>scm:git:git@github.com:mybatis/spring-native.git</url>
     </site>
   </distributionManagement>
-
-  <contributors>
-    <contributor>
-      <name>Kazuki Shimizu</name>
-      <email>kazuki43zoo@gmail.com</email>
-    </contributor>
-  </contributors>
-
-  <modules>
-    <module>core</module>
-    <module>extensions</module>
-    <module>samples</module>
-    <module>docs</module>
-  </modules>
 
   <properties>
     <!-- Project settings -->
@@ -92,33 +91,6 @@
     <!-- Reproducible Builds -->
     <project.build.outputTimestamp>1757561022</project.build.outputTimestamp>
   </properties>
-
-  <build>
-    <resources>
-      <resource>
-        <directory>${project.basedir}/src/main/resources</directory>
-        <filtering>true</filtering>
-      </resource>
-      <resource>
-        <directory>${project.basedir}/src/site</directory>
-        <targetPath>${project.build.directory}/site-src</targetPath>
-        <filtering>true</filtering>
-      </resource>
-    </resources>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-site-plugin</artifactId>
-          <configuration>
-            <locales>en,zh_CN,ko</locales>
-            <!-- Build using files that replace a placeholder using project properties -->
-            <siteDirectory>${project.build.directory}/site-src</siteDirectory>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
 
   <dependencyManagement>
     <dependencies>
@@ -189,55 +161,82 @@
       <url>https://oss.sonatype.org/content/repositories/snapshots</url>
     </repository>
     <repository>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
       <id>spring-releases</id>
       <name>Spring Releases</name>
       <url>https://repo.spring.io/release</url>
+    </repository>
+    <repository>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
-    </repository>
-    <repository>
       <id>spring-milestone</id>
       <name>Spring Milestone</name>
       <url>https://repo.spring.io/milestone</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
     </repository>
     <repository>
-      <id>spring-snapshot</id>
-      <name>Spring Snapshot</name>
-      <url>https://repo.spring.io/snapshot</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
+      <id>spring-snapshot</id>
+      <name>Spring Snapshot</name>
+      <url>https://repo.spring.io/snapshot</url>
     </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
       <id>spring-releases</id>
       <name>Spring Releases</name>
       <url>https://repo.spring.io/release</url>
+    </pluginRepository>
+    <pluginRepository>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
-    </pluginRepository>
-    <pluginRepository>
       <id>spring-milestone</id>
       <name>Spring Milestone</name>
       <url>https://repo.spring.io/milestone</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
     </pluginRepository>
     <pluginRepository>
-      <id>spring-snapshot</id>
-      <name>Spring Snapshot</name>
-      <url>https://repo.spring.io/snapshot</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
+      <id>spring-snapshot</id>
+      <name>Spring Snapshot</name>
+      <url>https://repo.spring.io/snapshot</url>
     </pluginRepository>
   </pluginRepositories>
+
+  <build>
+    <resources>
+      <resource>
+        <filtering>true</filtering>
+        <directory>${project.basedir}/src/main/resources</directory>
+      </resource>
+      <resource>
+        <targetPath>${project.build.directory}/site-src</targetPath>
+        <filtering>true</filtering>
+        <directory>${project.basedir}/src/site</directory>
+      </resource>
+    </resources>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <configuration>
+            <locales>en,zh_CN,ko</locales>
+            <!-- Build using files that replace a placeholder using project properties -->
+            <siteDirectory>${project.build.directory}/site-src</siteDirectory>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 
 </project>
