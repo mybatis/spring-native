@@ -1,8 +1,10 @@
 name: SonarCloud
+
 on:
   push:
     branches:
       - master
+
 jobs:
   build:
     if: github.repository_owner == 'mybatis'
@@ -15,7 +17,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          java-version: 21
+          java-version: 17
           distribution: zulu
       - name: Cache local Maven repository
         uses: actions/cache@v3
@@ -25,7 +27,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Analyze with SonarCloud
-        run: ./mvnw verify jacoco:report sonar:sonar -B -Dsonar.projectKey=mybatis_spring-native -Dsonar.organization=mybatis -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN -Dlicense.skip=true
+        run: ./mvnw verify jacoco:report sonar:sonar -B -Dsonar.projectKey=mybatis_spring-native -Dsonar.organization=mybatis -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN -Dlicense.skip=true --no-transfer-progress
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
