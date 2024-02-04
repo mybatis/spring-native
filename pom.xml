@@ -51,8 +51,8 @@
   </modules>
 
   <scm>
-    <connection>scm:git:git@github.com:mybatis/spring-native.git</connection>
-    <developerConnection>scm:git:git@github.com:mybatis/spring-native.git</developerConnection>
+    <connection>scm:git:ssh://git@github.com/mybatis/spring-native.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/mybatis/spring-native.git</developerConnection>
     <tag>HEAD</tag>
     <url>https://github.com/mybatis/spring-native/tree/master</url>
   </scm>
@@ -68,7 +68,7 @@
     <site>
       <id>gh-pages-scm</id>
       <name>Mybatis GitHub Pages</name>
-      <url>scm:git:git@github.com:mybatis/spring-native.git</url>
+      <url>scm:git:ssh://git@github.com/mybatis/spring-native.git</url>
     </site>
   </distributionManagement>
 
