@@ -54,7 +54,7 @@
     <connection>scm:git:ssh://git@github.com/mybatis/spring-native.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/mybatis/spring-native.git</developerConnection>
     <tag>HEAD</tag>
-    <url>https://github.com/mybatis/spring-native/tree/master</url>
+    <url>https://github.com/mybatis/spring-native/</url>
   </scm>
   <issueManagement>
     <system>GitHub Issue Management</system>
