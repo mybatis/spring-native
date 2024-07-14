@@ -17,17 +17,11 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: 17
-          distribution: zulu
-      - name: Cache local Maven repository
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
+          cache: maven
+          distribution: temurin
+          java-version: 21
       - name: Analyze with SonarCloud
-        run: ./mvnw verify jacoco:report sonar:sonar -B -Dsonar.projectKey=mybatis_spring-native -Dsonar.organization=mybatis -Dsonar.host.url=https://sonarcloud.io -Dsonar.token=$SONAR_TOKEN -Dlicense.skip=true --no-transfer-progress
+        run: ./mvnw verify jacoco:report sonar:sonar -B -V -Dsonar.projectKey=mybatis_spring-native -Dsonar.organization=mybatis -Dsonar.host.url=https://sonarcloud.io -Dsonar.token=$SONAR_TOKEN -Dlicense.skip=true --no-transfer-progress
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
