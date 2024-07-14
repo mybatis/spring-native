@@ -14,15 +14,9 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: 17
-          distribution: zulu
-      - name: Cache local Maven repository
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
+          cache: maven
+          distribution: temurin
+          java-version: 21
       - name: Deploy to Sonatype
         run: ./mvnw deploy -DskipTests -B -V --no-transfer-progress --settings ./.mvn/settings.xml -Dlicense.skip=true
         env:
