@@ -2,6 +2,9 @@ name: Samples
 on:
   push:
   pull_request:
+
+permissions: read-all
+
 jobs:
   build:
     name: Run ${{ matrix.sample }} on ${{ matrix.os }} (GraalVM ${{ matrix.java }})
