@@ -15,10 +15,10 @@
  */
 package org.mybatis.spring.nativex;
 
-import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -327,7 +327,7 @@ class MyBatisResourcesScanTest {
 
     public SimulateGradleBuildResourcesURLClassLoader(String path, ClassLoader classLoader)
         throws MalformedURLException {
-      super(new URL[] { new File(path).toURI().toURL() }, classLoader);
+      super(new URL[] { Path.of(path).toUri().toURL() }, classLoader);
     }
 
     @Override
