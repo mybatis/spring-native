@@ -19,7 +19,7 @@ MyBatis Spring Native 帮助你在 [Spring Native](https://github.com/spring-pro
 
 ### MyBatis Spring Boot
 
-- 自动配置 `SqlSessionFactory` 和 `SqlSessionTemplate` 
+- 自动配置 `SqlSessionFactory` 和 `SqlSessionTemplate`
 - 自动扫描带有 `@Mapper` 的 mapper 接口
 - 使用配置文件（`application.properties`）来配置 Mybatis 的行为
 - 从依赖注入容器中使用 MyBatis 的组件(`Interceptor`, `TypeHandler`, `LanguageDriver` 与 `DatabaseIdProvider`)
@@ -108,9 +108,9 @@ public class MybatisSpringNativeSampleApplication {
 我们推荐使用  [JEP-290 serial filter](https://docs.oracle.com/en/java/javase/11/core/serialization-filtering1.html).
 
 > **重要：**
-> 
+>
 > 当你遇到下面的警告日志，请考虑使用 [JEP-290 serial filter](https://docs.oracle.com/en/java/javase/11/core/serialization-filtering1.html).
-> 
+>
 > ```
 > 2022-01-16 13:18:21.045  WARN 21917 --- [           main] o.apache.ibatis.io.SerialFilterChecker   : As you are using functionality that deserializes object streams, it is recommended to define the JEP-290 serial filter. Please refer to https://docs.oracle.com/pls/topic/lookup?ctx=javase15&id=GUID-8296D8E8-2B93-4B9A-856E-0A65AF9B8C66
 > ```
