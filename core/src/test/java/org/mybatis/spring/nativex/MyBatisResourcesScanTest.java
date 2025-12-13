@@ -1,5 +1,5 @@
 /*
- *    Copyright 2022-2023 the original author or authors.
+ *    Copyright 2022-2025 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -327,7 +327,19 @@ class MyBatisResourcesScanTest {
 
     public SimulateGradleBuildResourcesURLClassLoader(String path, ClassLoader classLoader)
         throws MalformedURLException {
-      super(new URL[] { Path.of(path).toUri().toURL() }, classLoader);
+      super(new URL[] { pathToURL(cleanPath(path)) }, classLoader);
+    }
+
+    private static String cleanPath(String path) {
+      // Remove leading slash if path starts with "/C:/" or similar
+      if (path.length() > 2 && path.charAt(0) == '/' && Character.isLetter(path.charAt(1)) && path.charAt(2) == ':') {
+        return path.substring(1);
+      }
+      return path;
+    }
+
+    private static URL pathToURL(String path) throws MalformedURLException {
+      return Path.of(path).toUri().toURL();
     }
 
     @Override
