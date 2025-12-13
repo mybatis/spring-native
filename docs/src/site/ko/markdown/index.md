@@ -3,13 +3,13 @@
 ## 마이바티스 스프링 네이티브란?
 
 마이바티스 스프링 네이티브는 [Spring Native](https://github.com/spring-projects-experimental/spring-native)에 MyBatis 애플리케이션을 빠르게 만들 수 있도록 도와줍니다.
- 
+
 ## 지원 기능
 
 ### 마이바티스 핵심
 
 * SQL 주석(`@Select`/`@Insert`/기타 등등...)에 정적 SQLs과 동적 SQLs(OGNL 표현식으로) 작성
-* 클래스경로와 로드  SQLs에 xml 파일 매퍼(mapper, 단계별 접근법) 기반으로 한 규칙 감지 (예시. 매퍼 인터페이스 정규화된 클래스 이름(FQCN)이 `com.example.SampleMapper`이면, `com/example/SampleMapper.xml` file를 찾아냅니다) 
+* 클래스경로와 로드  SQLs에 xml 파일 매퍼(mapper, 단계별 접근법) 기반으로 한 규칙 감지 (예시. 매퍼 인터페이스 정규화된 클래스 이름(FQCN)이 `com.example.SampleMapper`이면, `com/example/SampleMapper.xml` file를 찾아냅니다)
 * SQL 제공자 사용(`@SelectProvider`/`@InsertProvider`/기타 등등...)
 * Use built-in 2nd cache feature(in-memory 2nd cache)
 * 빌트인 2단계 캐시 기능
