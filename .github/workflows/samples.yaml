@@ -32,16 +32,16 @@ jobs:
       fail-fast: false
       max-parallel: 10
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
       - name: Set up GraalVM
-        uses: graalvm/setup-graalvm@v1
+        uses: graalvm/setup-graalvm@790e28947b79a9c09c3391c0f18bf8d0f102ed69 # v1
         with:
           version: 'dev'
           java-version: ${{ matrix.java }}
           components: 'native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Cache local Maven repository
-        uses: actions/cache@v5
+        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-samples-${{ hashFiles('**/pom.xml') }}
