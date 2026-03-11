@@ -70,7 +70,8 @@ class MyBatisMapperFactoryBeanPostProcessorTest {
     Assertions.assertThat(beanDefinition.getResolvableType().hasUnresolvableGenerics()).isFalse();
   }
 
-  // With the new implementation exceptions during type resolution are caught and ignored
+  // With BeanRegistrationAotProcessor, the processAheadOfTime method catches and ignores exceptions
+  // during type resolution (unlike the old BeanDefinitionPostProcessor which propagated them).
   @Test
   void skipResolveMapperInterfaceTypeWhenMapperFactoryBeanSubclassWithMultiGenerics() {
     RootBeanDefinition beanDefinition = (RootBeanDefinition) BeanDefinitionBuilder
