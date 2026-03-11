@@ -183,6 +183,7 @@ public class MyBatisScannedResourcesHolder {
 
   static class Registrar implements ImportBeanDefinitionRegistrar {
     private static final Log LOG = LogFactory.getLog(Registrar.class);
+    // Instance field (not static) to avoid Spring 6.x classpath URL caching across contexts
     private final ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
     private static final MetadataReaderFactory METADATA_READER_FACTORY = new CachingMetadataReaderFactory();
     private static final Pattern JAR_RESOURCE_PREFIX_PATTERN = Pattern.compile(".*\\.jar!/");
