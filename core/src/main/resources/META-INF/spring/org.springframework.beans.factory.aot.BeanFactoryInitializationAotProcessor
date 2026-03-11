@@ -1,0 +1,2 @@
+org.mybatis.spring.nativex.MyBatisMapperNativeConfigurationProcessor
+org.mybatis.spring.nativex.MyBatisScannedResourcesNativeConfigurationProcessor

@@ -30,6 +30,7 @@ import java.util.stream.Stream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.ibatis.type.TypeHandler;
+import org.springframework.aot.hint.MemberCategory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
@@ -44,7 +45,6 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.ClassMetadata;
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
-import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -58,7 +58,7 @@ public class MyBatisScannedResourcesHolder {
   private Set<Class<?>> typeHandlerClasses;
   private Set<String> mapperLocations;
   private Set<Class<?>> reflectionClasses;
-  private TypeAccess[] reflectionTypeAccesses;
+  private MemberCategory[] reflectionTypeAccesses;
   private Set<String> resourceLocations;
 
   /**
@@ -148,7 +148,7 @@ public class MyBatisScannedResourcesHolder {
    *          access scopes for applying reflection type that scanned
    */
   @SuppressWarnings("unused")
-  public void setReflectionTypeAccesses(TypeAccess[] reflectionTypeAccesses) {
+  public void setReflectionTypeAccesses(MemberCategory[] reflectionTypeAccesses) {
     this.reflectionTypeAccesses = reflectionTypeAccesses;
   }
 
@@ -157,7 +157,7 @@ public class MyBatisScannedResourcesHolder {
    *
    * @return access scopes for applying reflection type that scanned
    */
-  public TypeAccess[] getReflectionTypeAccesses() {
+  public MemberCategory[] getReflectionTypeAccesses() {
     return reflectionTypeAccesses;
   }
 
@@ -183,7 +183,9 @@ public class MyBatisScannedResourcesHolder {
 
   static class Registrar implements ImportBeanDefinitionRegistrar {
     private static final Log LOG = LogFactory.getLog(Registrar.class);
-    private static final ResourcePatternResolver RESOURCE_PATTERN_RESOLVER = new PathMatchingResourcePatternResolver();
+    // Instance field (not static) to avoid URL caching in PathMatchingResourcePatternResolver
+    // when used across multiple application contexts (relevant since Spring Framework 6.x)
+    private final ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
     private static final MetadataReaderFactory METADATA_READER_FACTORY = new CachingMetadataReaderFactory();
     private static final Pattern JAR_RESOURCE_PREFIX_PATTERN = Pattern.compile(".*\\.jar!/");
     private static final boolean PRESENT_TYPE_HANDLER = ClassUtils.isPresent("org.apache.ibatis.type.TypeHandler",
@@ -238,7 +240,7 @@ public class MyBatisScannedResourcesHolder {
     private Set<Class<?>> scanClasses(String[] packagePatterns, Class<?> assignableType) throws IOException {
       Set<Class<?>> classes = new HashSet<>();
       for (String packagePattern : packagePatterns) {
-        Resource[] resources = RESOURCE_PATTERN_RESOLVER.getResources(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX
+        Resource[] resources = resourcePatternResolver.getResources(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX
             + ClassUtils.convertClassNameToResourcePath(packagePattern) + "/**/*.class");
         for (Resource resource : resources) {
           try {
@@ -267,7 +269,7 @@ public class MyBatisScannedResourcesHolder {
 
     private Resource[] getResources(String locationPattern) {
       try {
-        return RESOURCE_PATTERN_RESOLVER.getResources(locationPattern);
+        return resourcePatternResolver.getResources(locationPattern);
       } catch (IOException e) {
         LOG.debug("Fail getting resources. locationPattern: " + locationPattern, e);
         return new Resource[0];
@@ -297,7 +299,7 @@ public class MyBatisScannedResourcesHolder {
       for (int i = path.getNameCount() - 1; i >= 0; i--) {
         sb.insert(0, path.getName(i));
         String relativePath = sb.toString();
-        if (RESOURCE_PATTERN_RESOLVER.getResource(relativePath).exists()) {
+        if (resourcePatternResolver.getResource(relativePath).exists()) {
           return relativePath;
         }
         sb.insert(0, '/');

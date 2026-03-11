@@ -58,7 +58,7 @@ jobs:
       - name: Run with native image
         run: ./samples/${{ matrix.sample }}/target/mybatis-spring-native-sample-${{ matrix.sample }}
       - name: Run with executable jar on AOT mode
-        run: java -DspringAot=true -jar ./samples/${{ matrix.sample }}/target/mybatis-spring-native-sample-${{ matrix.sample }}-exec.jar
+        run: java -Dspring.aot.enabled=true -jar ./samples/${{ matrix.sample }}/target/mybatis-spring-native-sample-${{ matrix.sample }}-exec.jar
       - name: Run with executable jar
         run: java -jar ./samples/${{ matrix.sample }}/target/mybatis-spring-native-sample-${{ matrix.sample }}-exec.jar
       - name: Verify running with native image for ubuntu

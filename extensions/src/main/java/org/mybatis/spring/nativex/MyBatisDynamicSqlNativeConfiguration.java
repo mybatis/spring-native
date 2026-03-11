@@ -15,15 +15,6 @@
  */
 package org.mybatis.spring.nativex;
 
-import static org.springframework.nativex.hint.TypeAccess.DECLARED_CLASSES;
-import static org.springframework.nativex.hint.TypeAccess.DECLARED_CONSTRUCTORS;
-import static org.springframework.nativex.hint.TypeAccess.DECLARED_FIELDS;
-import static org.springframework.nativex.hint.TypeAccess.DECLARED_METHODS;
-import static org.springframework.nativex.hint.TypeAccess.PUBLIC_CLASSES;
-import static org.springframework.nativex.hint.TypeAccess.PUBLIC_CONSTRUCTORS;
-import static org.springframework.nativex.hint.TypeAccess.PUBLIC_FIELDS;
-import static org.springframework.nativex.hint.TypeAccess.PUBLIC_METHODS;
-
 import org.mybatis.dynamic.sql.delete.render.DefaultDeleteStatementProvider;
 import org.mybatis.dynamic.sql.insert.render.DefaultGeneralInsertStatementProvider;
 import org.mybatis.dynamic.sql.insert.render.DefaultInsertStatementProvider;
@@ -32,41 +23,34 @@ import org.mybatis.dynamic.sql.select.render.DefaultSelectStatementProvider;
 import org.mybatis.dynamic.sql.update.render.DefaultUpdateStatementProvider;
 import org.mybatis.dynamic.sql.util.SqlProviderAdapter;
 import org.mybatis.dynamic.sql.util.springbatch.SpringBatchProviderAdapter;
-import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.util.ClassUtils;
 
 /**
  * Registers hints to make a MyBatis Dynamic SQL component work in a Spring Native context.
  *
  * @author Kazuki Shimizu
  */
-// @formatter:off
-@NativeHint(
-    trigger = SqlProviderAdapter.class
-)
-@TypeHint(
-    types = {
-        SqlProviderAdapter.class,
-        SpringBatchProviderAdapter.class,
-        DefaultDeleteStatementProvider.class,
-        DefaultGeneralInsertStatementProvider.class,
-        DefaultInsertStatementProvider.class,
-        DefaultMultiRowInsertStatementProvider.class,
-        DefaultSelectStatementProvider.class,
-        DefaultUpdateStatementProvider.class
-    },
-    access = {
-        PUBLIC_CONSTRUCTORS,
-        PUBLIC_CLASSES,
-        PUBLIC_FIELDS,
-        PUBLIC_METHODS,
-        DECLARED_CLASSES,
-        DECLARED_CONSTRUCTORS,
-        DECLARED_FIELDS,
-        DECLARED_METHODS
+public class MyBatisDynamicSqlNativeConfiguration implements RuntimeHintsRegistrar {
+
+  private static final MemberCategory[] MEMBER_CATEGORIES = { MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS,
+      MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.INVOKE_PUBLIC_METHODS,
+      MemberCategory.INVOKE_DECLARED_METHODS, MemberCategory.PUBLIC_FIELDS, MemberCategory.DECLARED_FIELDS,
+      MemberCategory.PUBLIC_CLASSES, MemberCategory.DECLARED_CLASSES };
+
+  @Override
+  public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+    if (!ClassUtils.isPresent("org.mybatis.dynamic.sql.util.SqlProviderAdapter", classLoader)) {
+      return;
     }
-)
-// @formatter:on
-public class MyBatisDynamicSqlNativeConfiguration implements NativeConfiguration {
+    for (Class<?> type : new Class<?>[] { SqlProviderAdapter.class, SpringBatchProviderAdapter.class,
+        DefaultDeleteStatementProvider.class, DefaultGeneralInsertStatementProvider.class,
+        DefaultInsertStatementProvider.class, DefaultMultiRowInsertStatementProvider.class,
+        DefaultSelectStatementProvider.class, DefaultUpdateStatementProvider.class }) {
+      hints.reflection().registerType(type, MEMBER_CATEGORIES);
+    }
+  }
+
 }
