@@ -18,61 +18,46 @@ package org.mybatis.spring.nativex;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mybatis.spring.mapper.MapperFactoryBean;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.beans.factory.aot.BeanRegistrationAotContribution;
+import org.springframework.beans.factory.aot.BeanRegistrationAotProcessor;
+import org.springframework.beans.factory.support.RegisteredBean;
 import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.context.annotation.BeanDefinitionPostProcessor;
 import org.springframework.core.ResolvableType;
 import org.springframework.util.ClassUtils;
 
 /**
- * The {@code BeanDefinitionPostProcessor} for customizing a {@code MapperFactoryBean}.
+ * The {@code BeanRegistrationAotProcessor} for customizing a {@code MapperFactoryBean}.
  *
  * @author Stéphane Nicoll
  * @author Kazuki Shimizu
  */
-class MyBatisMapperFactoryBeanPostProcessor implements BeanDefinitionPostProcessor, BeanFactoryAware {
+class MyBatisMapperFactoryBeanPostProcessor implements BeanRegistrationAotProcessor {
 
   private static final Log LOG = LogFactory.getLog(MyBatisMapperFactoryBeanPostProcessor.class);
 
   private static final String MAPPER_FACTORY_BEAN = "org.mybatis.spring.mapper.MapperFactoryBean";
 
-  private ConfigurableBeanFactory beanFactory;
-
   @Override
-  public void setBeanFactory(BeanFactory beanFactory) {
-    this.beanFactory = (ConfigurableBeanFactory) beanFactory;
-  }
-
-  @Override
-  public void postProcessBeanDefinition(String beanName, RootBeanDefinition beanDefinition) {
-    if (ClassUtils.isPresent(MAPPER_FACTORY_BEAN, this.beanFactory.getBeanClassLoader())) {
-      resolveMapperFactoryBeanTypeIfNecessary(beanDefinition);
-    }
-  }
-
-  private void resolveMapperFactoryBeanTypeIfNecessary(RootBeanDefinition beanDefinition) {
-    if (!beanDefinition.hasBeanClass() || !MapperFactoryBean.class.isAssignableFrom(beanDefinition.getBeanClass())) {
-      return;
-    }
-    if (beanDefinition.getResolvableType().hasUnresolvableGenerics()) {
-      Class<?> mapperInterface = getMapperInterface(beanDefinition);
-      if (mapperInterface != null) {
-        // Exposes a generic type information to context for prevent early initializing
-        beanDefinition
-            .setTargetType(ResolvableType.forClassWithGenerics(beanDefinition.getBeanClass(), mapperInterface));
-      }
-    }
-  }
-
-  private Class<?> getMapperInterface(RootBeanDefinition beanDefinition) {
-    try {
-      return (Class<?>) beanDefinition.getPropertyValues().get("mapperInterface");
-    } catch (Exception e) {
-      LOG.debug("Fail getting mapper interface type.", e);
+  public BeanRegistrationAotContribution processAheadOfTime(RegisteredBean registeredBean) {
+    Class<?> beanClass = registeredBean.getBeanClass();
+    if (!ClassUtils.isPresent(MAPPER_FACTORY_BEAN, beanClass.getClassLoader())) {
       return null;
     }
+    if (!MapperFactoryBean.class.isAssignableFrom(beanClass)) {
+      return null;
+    }
+    RootBeanDefinition beanDefinition = registeredBean.getMergedBeanDefinition();
+    if (beanDefinition.getResolvableType().hasUnresolvableGenerics()) {
+      try {
+        Class<?> mapperInterface = (Class<?>) beanDefinition.getPropertyValues().get("mapperInterface");
+        if (mapperInterface != null) {
+          beanDefinition.setTargetType(ResolvableType.forClassWithGenerics(beanClass, mapperInterface));
+        }
+      } catch (Exception e) {
+        LOG.debug("Fail getting mapper interface type.", e);
+      }
+    }
+    return null;
   }
 
 }
