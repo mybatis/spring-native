@@ -110,6 +110,13 @@
                   <goal>add-reachability-metadata</goal>
                 </goals>
               </execution>
+              <execution>
+                <id>build-native</id>
+                <goals>
+                  <goal>compile-no-fork</goal>
+                </goals>
+                <phase>package</phase>
+              </execution>
             </executions>
           </plugin>
         </plugins>
