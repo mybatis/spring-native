@@ -80,7 +80,7 @@
           <extensions>true</extensions>
           <configuration>
             <buildArgs>
-              <arg>--initialize-at-build-time=org.apache.ibatis.logging.LogFactory</arg>
+              <arg>--initialize-at-run-time=org.apache.ibatis.logging.LogFactory</arg>
             </buildArgs>
           </configuration>
         </plugin>
