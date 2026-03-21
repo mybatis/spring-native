@@ -15,5 +15,5 @@
  */
 package org.mybatis.spring.nativex.mapper;
 
-public class Sample3Mapper {
+public interface Sample3Mapper {
 }
