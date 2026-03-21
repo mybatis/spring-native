@@ -36,9 +36,8 @@ jobs:
       - name: Set up GraalVM
         uses: graalvm/setup-graalvm@03e8abf916fd0e281b2efe7b2da3378bb0a1d085 # v1
         with:
-          version: 'dev'
           java-version: ${{ matrix.java }}
-          components: 'native-image'
+          distribution: 'graalvm-community'
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Cache local Maven repository
         uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
