@@ -28,6 +28,9 @@ import org.springframework.util.ClassUtils;
 
 /**
  * The {@code BeanRegistrationAotProcessor} for customizing a {@code MapperFactoryBean}.
+ * <p>
+ * This class is public so that Spring's AOT service loading from {@code META-INF/spring/aot.factories} can instantiate
+ * it.
  *
  * @author Stéphane Nicoll
  * @author Kazuki Shimizu
