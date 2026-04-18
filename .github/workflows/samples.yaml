@@ -36,9 +36,8 @@ jobs:
       - name: Set up GraalVM
         uses: graalvm/setup-graalvm@60c26726de13f8b90771df4bc1641a52a3159994 # v1
         with:
-          version: 'dev'
           java-version: ${{ matrix.java }}
-          components: 'native-image'
+          distribution: 'graalvm-community'
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Cache local Maven repository
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
@@ -54,11 +53,11 @@ jobs:
           java --version
           native-image --version
       - name: Build native image
-        run: ./mvnw -pl core,extensions,samples/${{ matrix.sample }} -U -D"maven.test.skip" -Pnative -D"license.skip=true" clean package -B -V --no-transfer-progress
+        run: ./mvnw -pl core,extensions,samples,samples/${{ matrix.sample }} -U -D"maven.test.skip" -Pnative -D"license.skip=true" clean package -B -V --no-transfer-progress
       - name: Run with native image
         run: ./samples/${{ matrix.sample }}/target/mybatis-spring-native-sample-${{ matrix.sample }}
       - name: Run with executable jar on AOT mode
-        run: java -DspringAot=true -jar ./samples/${{ matrix.sample }}/target/mybatis-spring-native-sample-${{ matrix.sample }}-exec.jar
+        run: java -Dspring.aot.enabled=true -jar ./samples/${{ matrix.sample }}/target/mybatis-spring-native-sample-${{ matrix.sample }}-exec.jar
       - name: Run with executable jar
         run: java -jar ./samples/${{ matrix.sample }}/target/mybatis-spring-native-sample-${{ matrix.sample }}-exec.jar
       - name: Verify running with native image for ubuntu

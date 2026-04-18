@@ -15,14 +15,10 @@
  */
 package org.mybatis.spring.nativex;
 
-import static org.springframework.nativex.hint.TypeAccess.*;
-import static org.springframework.nativex.hint.TypeAccess.QUERY_PUBLIC_CONSTRUCTORS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mybatis.spring.nativex.component.BarTypeHandler;
 import org.mybatis.spring.nativex.component.FooTypeHandler;
@@ -30,35 +26,30 @@ import org.mybatis.spring.nativex.component.TypeHandlers;
 import org.mybatis.spring.nativex.component2.AnyTypeHandler;
 import org.mybatis.spring.nativex.entity.City;
 import org.mybatis.spring.nativex.entity.Country;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.DefaultNativeReflectionEntry;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
+import org.springframework.aot.generate.GenerationContext;
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
+import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
+import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.nativex.hint.TypeAccess;
 
 class MyBatisScannedResourcesNativeConfigurationProcessorTest {
 
-  private static final TypeAccess[] DEFAULT_TYPE_ACCESSES = { PUBLIC_CONSTRUCTORS, PUBLIC_CLASSES, PUBLIC_FIELDS,
-      PUBLIC_METHODS, DECLARED_CLASSES, DECLARED_CONSTRUCTORS, DECLARED_FIELDS, DECLARED_METHODS,
-      QUERY_DECLARED_METHODS, QUERY_PUBLIC_METHODS, QUERY_DECLARED_CONSTRUCTORS, QUERY_PUBLIC_CONSTRUCTORS };
+  private static final MemberCategory[] DEFAULT_MEMBER_CATEGORIES = { MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS,
+      MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.INVOKE_PUBLIC_METHODS,
+      MemberCategory.INVOKE_DECLARED_METHODS, MemberCategory.PUBLIC_FIELDS, MemberCategory.DECLARED_FIELDS,
+      MemberCategory.PUBLIC_CLASSES, MemberCategory.DECLARED_CLASSES };
 
   @Test
   void empty() {
     AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
     context.refresh();
-    NativeConfigurationRegistry registry = process(context.getDefaultListableBeanFactory());
-    // reflection hint
-    {
-      Map<Class<?>, DefaultNativeReflectionEntry> entries = registry.reflection().reflectionEntries()
-          .collect(Collectors.toMap(DefaultNativeReflectionEntry::getType, x -> x));
-      Assertions.assertThat(entries).isEmpty();
-    }
-    // resource hint
-    {
-      Set<String> resources = registry.resources().toResourcesDescriptor().getPatterns();
-      Assertions.assertThat(resources).isEmpty();
-    }
+    RuntimeHints hints = process(context.getDefaultListableBeanFactory());
+    assertThat(hints.reflection().typeHints()).isEmpty();
+    assertThat(hints.resources().resourcePatternHints()).isEmpty();
   }
 
   @Test
@@ -66,22 +57,21 @@ class MyBatisScannedResourcesNativeConfigurationProcessorTest {
     AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
     context.registerBean(ConfigurationForOne.class);
     context.refresh();
-    NativeConfigurationRegistry registry = process(context.getDefaultListableBeanFactory());
+    RuntimeHints hints = process(context.getDefaultListableBeanFactory());
     // reflection hint
     {
-      Map<Class<?>, DefaultNativeReflectionEntry> entries = registry.reflection().reflectionEntries()
-          .collect(Collectors.toMap(DefaultNativeReflectionEntry::getType, x -> x));
-      Assertions.assertThat(entries).hasSize(2);
-      Assertions.assertThat(entries.get(City.class)).satisfies(x -> Assertions.assertThat(x.getAccess().toArray())
-          .isEqualTo(new TypeAccess[] { PUBLIC_CONSTRUCTORS, PUBLIC_METHODS }));
-      Assertions.assertThat(entries.get(Country.class)).satisfies(x -> Assertions.assertThat(x.getAccess().toArray())
-          .isEqualTo(new TypeAccess[] { PUBLIC_CONSTRUCTORS, PUBLIC_METHODS }));
+      assertThat(hints.reflection().typeHints()).hasSize(2);
+      assertThat(RuntimeHintsPredicates.reflection().onType(City.class)
+          .withMemberCategories(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS, MemberCategory.INVOKE_PUBLIC_METHODS))
+              .accepts(hints);
+      assertThat(RuntimeHintsPredicates.reflection().onType(Country.class)
+          .withMemberCategories(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS, MemberCategory.INVOKE_PUBLIC_METHODS))
+              .accepts(hints);
     }
     // resource hint
     {
-      Set<String> resources = registry.resources().toResourcesDescriptor().getPatterns();
-      Assertions.assertThat(resources).containsExactlyInAnyOrder("mapper/sub1/BarMapper.xml",
-          "mapper/sub1/FooMapper.xml");
+      assertThat(RuntimeHintsPredicates.resource().forResource("mapper/sub1/BarMapper.xml")).accepts(hints);
+      assertThat(RuntimeHintsPredicates.resource().forResource("mapper/sub1/FooMapper.xml")).accepts(hints);
     }
   }
 
@@ -90,49 +80,54 @@ class MyBatisScannedResourcesNativeConfigurationProcessorTest {
     AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
     context.registerBean(ConfigurationForMulti.class);
     context.refresh();
-    NativeConfigurationRegistry registry = process(context.getDefaultListableBeanFactory());
+    RuntimeHints hints = process(context.getDefaultListableBeanFactory());
     // reflection hint
     {
-      Map<Class<?>, DefaultNativeReflectionEntry> entries = registry.reflection().reflectionEntries()
-          .collect(Collectors.toMap(DefaultNativeReflectionEntry::getType, x -> x));
-      Assertions.assertThat(entries).hasSize(6);
-      Assertions.assertThat(entries.get(City.class)).satisfies(x -> Assertions.assertThat(x.getAccess().toArray())
-          .isEqualTo(new TypeAccess[] { PUBLIC_CONSTRUCTORS, PUBLIC_METHODS }));
-      Assertions.assertThat(entries.get(Country.class)).satisfies(x -> Assertions.assertThat(x.getAccess().toArray())
-          .isEqualTo(new TypeAccess[] { PUBLIC_CONSTRUCTORS, PUBLIC_METHODS }));
-      Assertions.assertThat(entries.get(FooTypeHandler.class))
-          .satisfies(x -> Assertions.assertThat(x.getAccess().toArray()).isEqualTo(DEFAULT_TYPE_ACCESSES));
-      Assertions.assertThat(entries.get(BarTypeHandler.class))
-          .satisfies(x -> Assertions.assertThat(x.getAccess().toArray()).isEqualTo(DEFAULT_TYPE_ACCESSES));
-      Assertions.assertThat(entries.get(AnyTypeHandler.class))
-          .satisfies(x -> Assertions.assertThat(x.getAccess().toArray()).isEqualTo(DEFAULT_TYPE_ACCESSES));
-      Assertions.assertThat(entries.get(TypeHandlers.InnerTypeHandler.class))
-          .satisfies(x -> Assertions.assertThat(x.getAccess().toArray()).isEqualTo(DEFAULT_TYPE_ACCESSES));
+      assertThat(hints.reflection().typeHints()).hasSize(6);
+      assertThat(RuntimeHintsPredicates.reflection().onType(City.class)
+          .withMemberCategories(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS, MemberCategory.INVOKE_PUBLIC_METHODS))
+              .accepts(hints);
+      assertThat(RuntimeHintsPredicates.reflection().onType(Country.class)
+          .withMemberCategories(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS, MemberCategory.INVOKE_PUBLIC_METHODS))
+              .accepts(hints);
+      assertThat(RuntimeHintsPredicates.reflection().onType(FooTypeHandler.class)
+          .withMemberCategories(DEFAULT_MEMBER_CATEGORIES)).accepts(hints);
+      assertThat(RuntimeHintsPredicates.reflection().onType(BarTypeHandler.class)
+          .withMemberCategories(DEFAULT_MEMBER_CATEGORIES)).accepts(hints);
+      assertThat(RuntimeHintsPredicates.reflection().onType(AnyTypeHandler.class)
+          .withMemberCategories(DEFAULT_MEMBER_CATEGORIES)).accepts(hints);
+      assertThat(RuntimeHintsPredicates.reflection().onType(TypeHandlers.InnerTypeHandler.class)
+          .withMemberCategories(DEFAULT_MEMBER_CATEGORIES)).accepts(hints);
     }
     // resource hint
     {
-      Set<String> resources = registry.resources().toResourcesDescriptor().getPatterns();
-      Assertions.assertThat(resources).containsExactlyInAnyOrder("mapper/sub1/BarMapper.xml",
-          "mapper/sub1/FooMapper.xml", "mapper/sub2/AnyMapper.xml");
+      assertThat(RuntimeHintsPredicates.resource().forResource("mapper/sub1/BarMapper.xml")).accepts(hints);
+      assertThat(RuntimeHintsPredicates.resource().forResource("mapper/sub1/FooMapper.xml")).accepts(hints);
+      assertThat(RuntimeHintsPredicates.resource().forResource("mapper/sub2/AnyMapper.xml")).accepts(hints);
     }
-
   }
 
-  private NativeConfigurationRegistry process(DefaultListableBeanFactory beanFactory) {
-    NativeConfigurationRegistry registry = new NativeConfigurationRegistry();
-    new MyBatisScannedResourcesNativeConfigurationProcessor().process(beanFactory, registry);
-    return registry;
+  private RuntimeHints process(DefaultListableBeanFactory beanFactory) {
+    RuntimeHints hints = new RuntimeHints();
+    GenerationContext generationContext = mock(GenerationContext.class);
+    when(generationContext.getRuntimeHints()).thenReturn(hints);
+    BeanFactoryInitializationAotContribution contribution = new MyBatisScannedResourcesNativeConfigurationProcessor()
+        .processAheadOfTime(beanFactory);
+    if (contribution != null) {
+      contribution.applyTo(generationContext, mock(BeanFactoryInitializationCode.class));
+    }
+    return hints;
   }
 
   @MyBatisResourcesScan(typeAliasesPackages = "org.mybatis.spring.nativex.entity", mapperLocationPatterns = "mapper/sub1/*.*", typeAccesses = {
-      TypeAccess.PUBLIC_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS })
+      MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS, MemberCategory.INVOKE_PUBLIC_METHODS })
   @Configuration
   static class ConfigurationForOne {
 
   }
 
   @MyBatisResourcesScan(typeAliasesPackages = "org.mybatis.spring.nativex.entity", typeAccesses = {
-      TypeAccess.PUBLIC_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS })
+      MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS, MemberCategory.INVOKE_PUBLIC_METHODS })
   @MyBatisResourcesScan(typeHandlerPackages = "org.mybatis.spring.nativex.component")
   @MyBatisResourcesScan(mapperLocationPatterns = "mapper/sub1/*.*")
   @MyBatisResourcesScan(reflectionTypePackages = "org.mybatis.spring.nativex.component2")

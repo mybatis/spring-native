@@ -15,25 +15,16 @@
  */
 package org.mybatis.spring.nativex;
 
-import static org.springframework.nativex.hint.TypeAccess.DECLARED_CLASSES;
-import static org.springframework.nativex.hint.TypeAccess.DECLARED_CONSTRUCTORS;
-import static org.springframework.nativex.hint.TypeAccess.DECLARED_FIELDS;
-import static org.springframework.nativex.hint.TypeAccess.DECLARED_METHODS;
-import static org.springframework.nativex.hint.TypeAccess.PUBLIC_CLASSES;
-import static org.springframework.nativex.hint.TypeAccess.PUBLIC_CONSTRUCTORS;
-import static org.springframework.nativex.hint.TypeAccess.PUBLIC_FIELDS;
-import static org.springframework.nativex.hint.TypeAccess.PUBLIC_METHODS;
-
 import org.mybatis.scripting.thymeleaf.SqlGeneratorConfig;
 import org.mybatis.scripting.thymeleaf.ThymeleafLanguageDriver;
 import org.mybatis.scripting.thymeleaf.ThymeleafLanguageDriverConfig;
 import org.mybatis.scripting.thymeleaf.expression.Likes;
 import org.mybatis.scripting.thymeleaf.support.TemplateFilePathProvider;
 import org.mybatis.scripting.thymeleaf.support.spring.SpringNamedParameterBindVariableRender;
-import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ResourceHint;
-import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.util.ClassUtils;
 import org.thymeleaf.expression.Aggregates;
 import org.thymeleaf.expression.Arrays;
 import org.thymeleaf.expression.Bools;
@@ -55,48 +46,26 @@ import org.thymeleaf.expression.Uris;
  *
  * @author Kazuki Shimizu
  */
-// @formatter:off
-@NativeHint(
-    trigger = ThymeleafLanguageDriver.class,
-    resources = @ResourceHint(
-        patterns = "mybatis-thymeleaf.properties"
-    )
-)
-@TypeHint(
-    types = {
-        ThymeleafLanguageDriver.class,
-        SqlGeneratorConfig.class,
-        ThymeleafLanguageDriverConfig.class,
-        TemplateFilePathProvider.class,
-        SpringNamedParameterBindVariableRender.class,
-        Likes.class,
-        Uris.class,
-        Calendars.class,
-        Dates.class,
-        Bools.class,
-        Numbers.class,
-        Objects.class,
-        Strings.class,
-        Arrays.class,
-        Lists.class,
-        Sets.class,
-        Maps.class,
-        Aggregates.class,
-        Messages.class,
-        Ids.class,
-        ExecutionInfo.class
-    },
-    access = {
-        PUBLIC_CONSTRUCTORS,
-        PUBLIC_CLASSES,
-        PUBLIC_FIELDS,
-        PUBLIC_METHODS,
-        DECLARED_CLASSES,
-        DECLARED_CONSTRUCTORS,
-        DECLARED_FIELDS,
-        DECLARED_METHODS
+public class MyBatisThymeleafNativeConfiguration implements RuntimeHintsRegistrar {
+
+  private static final MemberCategory[] MEMBER_CATEGORIES = { MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS,
+      MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.INVOKE_PUBLIC_METHODS,
+      MemberCategory.INVOKE_DECLARED_METHODS, MemberCategory.PUBLIC_FIELDS, MemberCategory.DECLARED_FIELDS,
+      MemberCategory.PUBLIC_CLASSES, MemberCategory.DECLARED_CLASSES };
+
+  @Override
+  public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+    if (!ClassUtils.isPresent("org.mybatis.scripting.thymeleaf.ThymeleafLanguageDriver", classLoader)) {
+      return;
     }
-)
-// @formatter:on
-public class MyBatisThymeleafNativeConfiguration implements NativeConfiguration {
+    for (Class<?> type : new Class<?>[] { ThymeleafLanguageDriver.class, SqlGeneratorConfig.class,
+        ThymeleafLanguageDriverConfig.class, TemplateFilePathProvider.class,
+        SpringNamedParameterBindVariableRender.class, Likes.class, Uris.class, Calendars.class, Dates.class,
+        Bools.class, Numbers.class, Objects.class, Strings.class, Arrays.class, Lists.class, Sets.class, Maps.class,
+        Aggregates.class, Messages.class, Ids.class, ExecutionInfo.class }) {
+      hints.reflection().registerType(type, MEMBER_CATEGORIES);
+    }
+    hints.resources().registerPattern("mybatis-thymeleaf.properties");
+  }
+
 }
