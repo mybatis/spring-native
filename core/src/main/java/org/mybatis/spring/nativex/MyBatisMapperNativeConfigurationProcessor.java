@@ -63,7 +63,8 @@ public class MyBatisMapperNativeConfigurationProcessor implements BeanFactoryIni
       return null;
     }
     for (String beanName : beanNames) {
-      BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName.substring(1));
+      BeanDefinition beanDefinition = beanFactory
+          .getBeanDefinition(beanName.startsWith("&") ? beanName.substring(1) : beanName);
       ConstructorArgumentValues constructorArgumentValues = beanDefinition.getConstructorArgumentValues();
       if (!constructorArgumentValues.isEmpty()) {
         constructorArgumentValues.clear();
@@ -72,7 +73,8 @@ public class MyBatisMapperNativeConfigurationProcessor implements BeanFactoryIni
     return (generationContext, beanFactoryInitializationCode) -> {
       RuntimeHints hints = generationContext.getRuntimeHints();
       for (String beanName : beanNames) {
-        BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName.substring(1));
+        BeanDefinition beanDefinition = beanFactory
+            .getBeanDefinition(beanName.startsWith("&") ? beanName.substring(1) : beanName);
         PropertyValue mapperInterface = beanDefinition.getPropertyValues().getPropertyValue("mapperInterface");
         if (mapperInterface != null && mapperInterface.getValue() != null) {
           Class<?> mapperInterfaceType = (Class<?>) mapperInterface.getValue();
