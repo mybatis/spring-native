@@ -100,6 +100,18 @@ class MyBatisMapperNativeConfigurationProcessorTest {
   }
 
   @Test
+  void clearConstructorArgumentsForMapperFactoryBean() {
+    DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+    beanFactory.registerBeanDefinition("sampleMapper", BeanDefinitionBuilder.rootBeanDefinition(MapperFactoryBean.class)
+        .addConstructorArgValue(SampleMapper.class.getName()).addPropertyValue("mapperInterface", SampleMapper.class)
+        .addPropertyValue("sqlSessionTemplate", new RuntimeBeanNameReference("sqlSessionTemplate"))
+        .getBeanDefinition());
+    RuntimeHints hints = process(beanFactory);
+    assertThat(hints.reflection().typeHints()).isNotEmpty();
+    assertThat(beanFactory.getBeanDefinition("sampleMapper").getConstructorArgumentValues().isEmpty()).isTrue();
+  }
+
+  @Test
   void registerMultiMapperInterface() {
     DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
     beanFactory.registerBeanDefinition("sample2Mapper",

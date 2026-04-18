@@ -20,7 +20,9 @@ import java.util.List;
 import org.mybatis.spring.boot.autoconfigure.ConfigurationCustomizer;
 import org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration;
 import org.mybatis.spring.boot.autoconfigure.SqlSessionFactoryBeanCustomizer;
+import org.mybatis.spring.mapper.MapperFactoryBean;
 import org.mybatis.spring.nativex.MyBatisScannedResourcesHolder;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -58,6 +60,17 @@ public class MyBatisSpringNativeAutoConfiguration {
           .flatMap(holder -> holder.getMapperLocations().stream().map(ClassPathResource::new)).toArray(Resource[]::new);
       if (resources.length > 0) {
         factoryBean.setMapperLocations(resources);
+      }
+    };
+  }
+
+  @Bean
+  static BeanFactoryPostProcessor mybatisMapperFactoryBeanDefinitionPostProcessor() {
+    return beanFactory -> {
+      String[] beanNames = beanFactory.getBeanNamesForType(MapperFactoryBean.class);
+      for (String beanName : beanNames) {
+        beanFactory.getBeanDefinition(beanName.startsWith("&") ? beanName.substring(1) : beanName)
+            .getConstructorArgumentValues().clear();
       }
     };
   }

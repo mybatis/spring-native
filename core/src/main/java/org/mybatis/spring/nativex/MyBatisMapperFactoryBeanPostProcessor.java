@@ -20,6 +20,7 @@ import org.apache.commons.logging.LogFactory;
 import org.mybatis.spring.mapper.MapperFactoryBean;
 import org.springframework.beans.factory.aot.BeanRegistrationAotContribution;
 import org.springframework.beans.factory.aot.BeanRegistrationAotProcessor;
+import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.support.RegisteredBean;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.core.ResolvableType;
@@ -31,7 +32,7 @@ import org.springframework.util.ClassUtils;
  * @author Stéphane Nicoll
  * @author Kazuki Shimizu
  */
-class MyBatisMapperFactoryBeanPostProcessor implements BeanRegistrationAotProcessor {
+public class MyBatisMapperFactoryBeanPostProcessor implements BeanRegistrationAotProcessor {
 
   private static final Log LOG = LogFactory.getLog(MyBatisMapperFactoryBeanPostProcessor.class);
 
@@ -57,6 +58,8 @@ class MyBatisMapperFactoryBeanPostProcessor implements BeanRegistrationAotProces
         LOG.debug("Fail getting mapper interface type.", e);
       }
     }
+    ConstructorArgumentValues constructorArgumentValues = beanDefinition.getConstructorArgumentValues();
+    constructorArgumentValues.clear();
     return null;
   }
 

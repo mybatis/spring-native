@@ -31,6 +31,7 @@ import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContrib
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
@@ -60,6 +61,13 @@ public class MyBatisMapperNativeConfigurationProcessor implements BeanFactoryIni
     String[] beanNames = beanFactory.getBeanNamesForType(MapperFactoryBean.class);
     if (beanNames.length == 0) {
       return null;
+    }
+    for (String beanName : beanNames) {
+      BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName.substring(1));
+      ConstructorArgumentValues constructorArgumentValues = beanDefinition.getConstructorArgumentValues();
+      if (!constructorArgumentValues.isEmpty()) {
+        constructorArgumentValues.clear();
+      }
     }
     return (generationContext, beanFactoryInitializationCode) -> {
       RuntimeHints hints = generationContext.getRuntimeHints();

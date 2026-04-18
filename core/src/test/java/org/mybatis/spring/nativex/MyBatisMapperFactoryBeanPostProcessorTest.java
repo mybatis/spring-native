@@ -48,6 +48,27 @@ class MyBatisMapperFactoryBeanPostProcessorTest {
   }
 
   @Test
+  void clearConstructorArgumentsWhenHasGenericConstructorArgument() {
+    RootBeanDefinition beanDefinition = (RootBeanDefinition) BeanDefinitionBuilder
+        .rootBeanDefinition(MapperFactoryBean.class).addConstructorArgValue(SampleMapper.class.getName())
+        .addPropertyValue("mapperInterface", SampleMapper.class).getBeanDefinition();
+    Assertions.assertThat(beanDefinition.getConstructorArgumentValues().getArgumentCount()).isEqualTo(1);
+    postProcess(MapperFactoryBean.class, beanDefinition);
+    Assertions.assertThat(beanDefinition.getConstructorArgumentValues().isEmpty()).isTrue();
+  }
+
+  @Test
+  void clearConstructorArgumentsWhenHasIndexedConstructorArgument() {
+    RootBeanDefinition beanDefinition = (RootBeanDefinition) BeanDefinitionBuilder
+        .rootBeanDefinition(MapperFactoryBean.class).addConstructorArgValue(SampleMapper.class.getName())
+        .addPropertyValue("mapperInterface", SampleMapper.class).getBeanDefinition();
+    beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(1, "sampleMapperClass");
+    Assertions.assertThat(beanDefinition.getConstructorArgumentValues().getArgumentCount()).isEqualTo(2);
+    postProcess(MapperFactoryBean.class, beanDefinition);
+    Assertions.assertThat(beanDefinition.getConstructorArgumentValues().isEmpty()).isTrue();
+  }
+
+  @Test
   void resolveMapperInterfaceTypeWhenMapperFactoryBeanSubclassWithOneGeneric() {
     RootBeanDefinition beanDefinition = (RootBeanDefinition) BeanDefinitionBuilder
         .rootBeanDefinition(MapperFactoryBean2.class).addPropertyValue("mapperInterface", SampleMapper.class)
