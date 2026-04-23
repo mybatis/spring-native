@@ -50,7 +50,7 @@
     <maven.test.skip>true</maven.test.skip>
     <maven.site.skip>true</maven.site.skip>
 
-    <native-buildtools.version>1.0.0</native-buildtools.version>
+    <native-buildtools.version>1.1.0</native-buildtools.version>
   </properties>
 
   <dependencyManagement>
