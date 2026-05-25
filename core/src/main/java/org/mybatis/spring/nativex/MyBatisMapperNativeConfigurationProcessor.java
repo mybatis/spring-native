@@ -15,19 +15,6 @@
  */
 package org.mybatis.spring.nativex;
 
-import static org.springframework.nativex.hint.TypeAccess.DECLARED_CLASSES;
-import static org.springframework.nativex.hint.TypeAccess.DECLARED_CONSTRUCTORS;
-import static org.springframework.nativex.hint.TypeAccess.DECLARED_FIELDS;
-import static org.springframework.nativex.hint.TypeAccess.DECLARED_METHODS;
-import static org.springframework.nativex.hint.TypeAccess.PUBLIC_CLASSES;
-import static org.springframework.nativex.hint.TypeAccess.PUBLIC_CONSTRUCTORS;
-import static org.springframework.nativex.hint.TypeAccess.PUBLIC_FIELDS;
-import static org.springframework.nativex.hint.TypeAccess.PUBLIC_METHODS;
-import static org.springframework.nativex.hint.TypeAccess.QUERY_DECLARED_CONSTRUCTORS;
-import static org.springframework.nativex.hint.TypeAccess.QUERY_DECLARED_METHODS;
-import static org.springframework.nativex.hint.TypeAccess.QUERY_PUBLIC_CONSTRUCTORS;
-import static org.springframework.nativex.hint.TypeAccess.QUERY_PUBLIC_METHODS;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.function.Function;
@@ -37,14 +24,14 @@ import org.apache.ibatis.annotations.InsertProvider;
 import org.apache.ibatis.annotations.SelectProvider;
 import org.apache.ibatis.annotations.UpdateProvider;
 import org.mybatis.spring.mapper.MapperFactoryBean;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeProxyEntry;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeResourcesEntry;
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.beans.PropertyValue;
+import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
+import org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.nativex.hint.TypeAccess;
+import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
@@ -54,69 +41,84 @@ import org.springframework.util.ReflectionUtils;
  * @author Kazuki Shimizu
  * @author Josh Long
  */
-public class MyBatisMapperNativeConfigurationProcessor implements BeanFactoryNativeConfigurationProcessor {
+public class MyBatisMapperNativeConfigurationProcessor implements BeanFactoryInitializationAotProcessor {
 
   private static final String MAPPER_FACTORY_BEAN = "org.mybatis.spring.mapper.MapperFactoryBean";
 
-  private static final TypeAccess[] TYPE_ACCESSES = { PUBLIC_CONSTRUCTORS, PUBLIC_CLASSES, PUBLIC_FIELDS,
-      PUBLIC_METHODS, DECLARED_CLASSES, DECLARED_CONSTRUCTORS, DECLARED_FIELDS, DECLARED_METHODS,
-      QUERY_DECLARED_METHODS, QUERY_PUBLIC_METHODS, QUERY_DECLARED_CONSTRUCTORS, QUERY_PUBLIC_CONSTRUCTORS };
+  private static final MemberCategory[] MEMBER_CATEGORIES = { MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS,
+      MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.INVOKE_PUBLIC_METHODS,
+      MemberCategory.INVOKE_DECLARED_METHODS, MemberCategory.PUBLIC_FIELDS, MemberCategory.DECLARED_FIELDS,
+      MemberCategory.PUBLIC_CLASSES, MemberCategory.DECLARED_CLASSES };
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
+  public BeanFactoryInitializationAotContribution processAheadOfTime(ConfigurableListableBeanFactory beanFactory) {
     if (!ClassUtils.isPresent(MAPPER_FACTORY_BEAN, beanFactory.getBeanClassLoader())) {
-      return;
+      return null;
     }
     String[] beanNames = beanFactory.getBeanNamesForType(MapperFactoryBean.class);
+    if (beanNames.length == 0) {
+      return null;
+    }
     for (String beanName : beanNames) {
-      BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName.substring(1));
-      PropertyValue mapperInterface = beanDefinition.getPropertyValues().getPropertyValue("mapperInterface");
-      if (mapperInterface != null && mapperInterface.getValue() != null) {
-        Class<?> mapperInterfaceType = (Class<?>) mapperInterface.getValue();
-        if (mapperInterfaceType != null) {
-          registerReflectionTypeIfNecessary(mapperInterfaceType, registry);
-          registry.proxy().add(NativeProxyEntry.ofInterfaces(mapperInterfaceType));
-          registry.resources()
-              .add(NativeResourcesEntry.of(mapperInterfaceType.getName().replace('.', '/').concat(".xml")));
-          registerMapperRelationships(mapperInterfaceType, registry);
-        }
+      BeanDefinition beanDefinition = beanFactory
+          .getBeanDefinition(beanName.startsWith("&") ? beanName.substring(1) : beanName);
+      ConstructorArgumentValues constructorArgumentValues = beanDefinition.getConstructorArgumentValues();
+      if (!constructorArgumentValues.isEmpty()) {
+        constructorArgumentValues.clear();
       }
     }
+    return (generationContext, beanFactoryInitializationCode) -> {
+      RuntimeHints hints = generationContext.getRuntimeHints();
+      for (String beanName : beanNames) {
+        BeanDefinition beanDefinition = beanFactory
+            .getBeanDefinition(beanName.startsWith("&") ? beanName.substring(1) : beanName);
+        PropertyValue mapperInterface = beanDefinition.getPropertyValues().getPropertyValue("mapperInterface");
+        if (mapperInterface != null && mapperInterface.getValue() != null) {
+          Class<?> mapperInterfaceType = (Class<?>) mapperInterface.getValue();
+          if (mapperInterfaceType != null) {
+            registerReflectionTypeIfNecessary(mapperInterfaceType, hints);
+            hints.proxies().registerJdkProxy(mapperInterfaceType);
+            hints.resources().registerPattern(mapperInterfaceType.getName().replace('.', '/').concat(".xml"));
+            registerMapperRelationships(mapperInterfaceType, hints);
+          }
+        }
+      }
+    };
   }
 
-  private void registerMapperRelationships(Class<?> mapperInterfaceType, NativeConfigurationRegistry registry) {
+  private void registerMapperRelationships(Class<?> mapperInterfaceType, RuntimeHints hints) {
     Method[] methods = ReflectionUtils.getAllDeclaredMethods(mapperInterfaceType);
     for (Method method : methods) {
       if (method.getDeclaringClass() != Object.class) {
         ReflectionUtils.makeAccessible(method);
-        registerSqlProviderTypes(method, registry, SelectProvider.class, SelectProvider::value, SelectProvider::type);
-        registerSqlProviderTypes(method, registry, InsertProvider.class, InsertProvider::value, InsertProvider::type);
-        registerSqlProviderTypes(method, registry, UpdateProvider.class, UpdateProvider::value, UpdateProvider::type);
-        registerSqlProviderTypes(method, registry, DeleteProvider.class, DeleteProvider::value, DeleteProvider::type);
+        registerSqlProviderTypes(method, hints, SelectProvider.class, SelectProvider::value, SelectProvider::type);
+        registerSqlProviderTypes(method, hints, InsertProvider.class, InsertProvider::value, InsertProvider::type);
+        registerSqlProviderTypes(method, hints, UpdateProvider.class, UpdateProvider::value, UpdateProvider::type);
+        registerSqlProviderTypes(method, hints, DeleteProvider.class, DeleteProvider::value, DeleteProvider::type);
         Class<?> returnType = MyBatisMapperTypeUtils.resolveReturnClass(mapperInterfaceType, method);
-        registerReflectionTypeIfNecessary(returnType, registry);
+        registerReflectionTypeIfNecessary(returnType, hints);
         MyBatisMapperTypeUtils.resolveParameterClasses(mapperInterfaceType, method)
-            .forEach(x -> registerReflectionTypeIfNecessary(x, registry));
+            .forEach(x -> registerReflectionTypeIfNecessary(x, hints));
       }
     }
   }
 
   @SafeVarargs
-  private final <T extends Annotation> void registerSqlProviderTypes(Method method,
-      NativeConfigurationRegistry registry, Class<T> annotationType, Function<T, Class<?>>... providerTypeResolvers) {
+  private final <T extends Annotation> void registerSqlProviderTypes(Method method, RuntimeHints hints,
+      Class<T> annotationType, Function<T, Class<?>>... providerTypeResolvers) {
     for (T annotation : method.getAnnotationsByType(annotationType)) {
       for (Function<T, Class<?>> providerTypeResolver : providerTypeResolvers) {
-        registerReflectionTypeIfNecessary(providerTypeResolver.apply(annotation), registry);
+        registerReflectionTypeIfNecessary(providerTypeResolver.apply(annotation), hints);
       }
     }
   }
 
-  private void registerReflectionTypeIfNecessary(Class<?> type, NativeConfigurationRegistry registry) {
+  private void registerReflectionTypeIfNecessary(Class<?> type, RuntimeHints hints) {
     if (!type.isPrimitive() && !type.getName().startsWith("java")) {
-      registry.reflection().forType(type).withAccess(TYPE_ACCESSES);
+      hints.reflection().registerType(type, MEMBER_CATEGORIES);
     }
   }
 

@@ -1,0 +1,2 @@
+org.mybatis.spring.nativex.MyBatisCoreNativeConfiguration
+org.mybatis.spring.nativex.MyBatisSpringNativeConfiguration

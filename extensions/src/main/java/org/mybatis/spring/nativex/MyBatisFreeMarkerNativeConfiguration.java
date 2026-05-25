@@ -15,56 +15,38 @@
  */
 package org.mybatis.spring.nativex;
 
-import static org.springframework.nativex.hint.TypeAccess.DECLARED_CLASSES;
-import static org.springframework.nativex.hint.TypeAccess.DECLARED_CONSTRUCTORS;
-import static org.springframework.nativex.hint.TypeAccess.DECLARED_FIELDS;
-import static org.springframework.nativex.hint.TypeAccess.DECLARED_METHODS;
-import static org.springframework.nativex.hint.TypeAccess.PUBLIC_CLASSES;
-import static org.springframework.nativex.hint.TypeAccess.PUBLIC_CONSTRUCTORS;
-import static org.springframework.nativex.hint.TypeAccess.PUBLIC_FIELDS;
-import static org.springframework.nativex.hint.TypeAccess.PUBLIC_METHODS;
-
 import org.mybatis.scripting.freemarker.FreeMarkerLanguageDriver;
 import org.mybatis.scripting.freemarker.FreeMarkerLanguageDriverConfig;
 import org.mybatis.scripting.freemarker.support.TemplateFilePathProvider;
-import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ResourceHint;
-import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.util.ClassUtils;
 
 /**
  * Registers hints to make a MyBatis FreeMarker component work in a Spring Native context.
  *
  * @author Kazuki Shimizu
  */
-// @formatter:off
-@NativeHint(
-    trigger = FreeMarkerLanguageDriver.class,
-    resources = @ResourceHint(
-        patterns = {
-            "mybatis-freemarker.properties",
-            "freemarker/version.properties",
-            "freemarker/ext/beans/DefaultMemberAccessPolicy-rules"
-        }
-    )
-)
-@TypeHint(
-    types = {
-        FreeMarkerLanguageDriver.class,
-        FreeMarkerLanguageDriverConfig.class,
-        TemplateFilePathProvider.class
-    },
-    access = {
-        PUBLIC_CONSTRUCTORS,
-        PUBLIC_CLASSES,
-        PUBLIC_FIELDS,
-        PUBLIC_METHODS,
-        DECLARED_CLASSES,
-        DECLARED_CONSTRUCTORS,
-        DECLARED_FIELDS,
-        DECLARED_METHODS
+public class MyBatisFreeMarkerNativeConfiguration implements RuntimeHintsRegistrar {
+
+  private static final MemberCategory[] MEMBER_CATEGORIES = { MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS,
+      MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.INVOKE_PUBLIC_METHODS,
+      MemberCategory.INVOKE_DECLARED_METHODS, MemberCategory.PUBLIC_FIELDS, MemberCategory.DECLARED_FIELDS,
+      MemberCategory.PUBLIC_CLASSES, MemberCategory.DECLARED_CLASSES };
+
+  @Override
+  public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+    if (!ClassUtils.isPresent("org.mybatis.scripting.freemarker.FreeMarkerLanguageDriver", classLoader)) {
+      return;
     }
-)
-// @formatter:on
-public class MyBatisFreeMarkerNativeConfiguration implements NativeConfiguration {
+    for (Class<?> type : new Class<?>[] { FreeMarkerLanguageDriver.class, FreeMarkerLanguageDriverConfig.class,
+        TemplateFilePathProvider.class }) {
+      hints.reflection().registerType(type, MEMBER_CATEGORIES);
+    }
+    hints.resources().registerPattern("mybatis-freemarker.properties");
+    hints.resources().registerPattern("freemarker/version.properties");
+    hints.resources().registerPattern("freemarker/ext/beans/DefaultMemberAccessPolicy-rules");
+  }
+
 }

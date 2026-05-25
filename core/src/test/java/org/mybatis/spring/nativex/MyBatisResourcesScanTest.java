@@ -35,9 +35,9 @@ import org.mybatis.spring.nativex.component2.AnyTypeHandler;
 import org.mybatis.spring.nativex.entity.City;
 import org.mybatis.spring.nativex.entity.Country;
 import org.mybatis.spring.nativex.marker.StandardEntity;
+import org.springframework.aot.hint.MemberCategory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.util.ClassUtils;
 
 class MyBatisResourcesScanTest {
@@ -149,7 +149,8 @@ class MyBatisResourcesScanTest {
     Assertions.assertThat(holder.getTypeHandlerClasses()).isEmpty();
     Assertions.assertThat(holder.getReflectionClasses()).containsExactlyInAnyOrder(City.class, Country.class);
     Assertions.assertThat(holder.getResourceLocations()).isEmpty();
-    Assertions.assertThat(holder.getReflectionTypeAccesses()).containsExactlyInAnyOrder(TypeAccess.DECLARED_CLASSES);
+    Assertions.assertThat(holder.getReflectionTypeAccesses())
+        .containsExactlyInAnyOrder(MemberCategory.DECLARED_CLASSES);
   }
 
   @Test
@@ -282,12 +283,12 @@ class MyBatisResourcesScanTest {
   static class ConfigurationForScanMapperLocationsWithMultiPattern {
   }
 
-  @MyBatisResourcesScan(reflectionTypePackages = "org.mybatis.spring.nativex.entity", typeAccesses = TypeAccess.DECLARED_CLASSES)
+  @MyBatisResourcesScan(reflectionTypePackages = "org.mybatis.spring.nativex.entity", typeAccesses = MemberCategory.DECLARED_CLASSES)
   @Configuration
   static class ConfigurationForScanReflectionType {
   }
 
-  @MyBatisResourcesScan(reflectionTypePackages = "org.mybatis.spring.nativex.entity", reflectionTypeSupperType = StandardEntity.class, typeAccesses = TypeAccess.DECLARED_CLASSES)
+  @MyBatisResourcesScan(reflectionTypePackages = "org.mybatis.spring.nativex.entity", reflectionTypeSupperType = StandardEntity.class, typeAccesses = MemberCategory.DECLARED_CLASSES)
   @Configuration
   static class ConfigurationForScanReflectionTypeWithSuperType {
   }

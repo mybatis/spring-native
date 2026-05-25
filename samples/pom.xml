@@ -78,6 +78,11 @@
           <artifactId>native-maven-plugin</artifactId>
           <version>${native-buildtools.version}</version>
           <extensions>true</extensions>
+          <configuration>
+            <buildArgs>
+              <arg>--initialize-at-run-time=org.apache.ibatis.logging.LogFactory</arg>
+            </buildArgs>
+          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>

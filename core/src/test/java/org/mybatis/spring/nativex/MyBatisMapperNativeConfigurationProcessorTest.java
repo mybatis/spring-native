@@ -15,40 +15,24 @@
  */
 package org.mybatis.spring.nativex;
 
-import static org.springframework.nativex.hint.TypeAccess.DECLARED_CLASSES;
-import static org.springframework.nativex.hint.TypeAccess.DECLARED_CONSTRUCTORS;
-import static org.springframework.nativex.hint.TypeAccess.DECLARED_FIELDS;
-import static org.springframework.nativex.hint.TypeAccess.DECLARED_METHODS;
-import static org.springframework.nativex.hint.TypeAccess.PUBLIC_CLASSES;
-import static org.springframework.nativex.hint.TypeAccess.PUBLIC_CONSTRUCTORS;
-import static org.springframework.nativex.hint.TypeAccess.PUBLIC_FIELDS;
-import static org.springframework.nativex.hint.TypeAccess.PUBLIC_METHODS;
-import static org.springframework.nativex.hint.TypeAccess.QUERY_DECLARED_CONSTRUCTORS;
-import static org.springframework.nativex.hint.TypeAccess.QUERY_DECLARED_METHODS;
-import static org.springframework.nativex.hint.TypeAccess.QUERY_PUBLIC_CONSTRUCTORS;
-import static org.springframework.nativex.hint.TypeAccess.QUERY_PUBLIC_METHODS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mybatis.spring.mapper.MapperFactoryBean;
 import org.mybatis.spring.nativex.mapper.Sample2Mapper;
 import org.mybatis.spring.nativex.mapper.Sample3Mapper;
 import org.mybatis.spring.nativex.mapper.SampleMapper;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.DefaultNativeReflectionEntry;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeProxyEntry;
+import org.springframework.aot.generate.GenerationContext;
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
+import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
+import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
 import org.springframework.beans.factory.config.RuntimeBeanNameReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
-import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
-import org.springframework.nativex.hint.TypeAccess;
 
 /**
  * Test cases for {@link MyBatisMapperNativeConfigurationProcessor}.
@@ -57,9 +41,10 @@ import org.springframework.nativex.hint.TypeAccess;
  */
 class MyBatisMapperNativeConfigurationProcessorTest {
 
-  private static final TypeAccess[] TYPE_ACCESSES = { PUBLIC_CONSTRUCTORS, PUBLIC_CLASSES, PUBLIC_FIELDS,
-      PUBLIC_METHODS, DECLARED_CLASSES, DECLARED_CONSTRUCTORS, DECLARED_FIELDS, DECLARED_METHODS,
-      QUERY_DECLARED_METHODS, QUERY_PUBLIC_METHODS, QUERY_DECLARED_CONSTRUCTORS, QUERY_PUBLIC_CONSTRUCTORS };
+  private static final MemberCategory[] MEMBER_CATEGORIES = { MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS,
+      MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.INVOKE_PUBLIC_METHODS,
+      MemberCategory.INVOKE_DECLARED_METHODS, MemberCategory.PUBLIC_FIELDS, MemberCategory.DECLARED_FIELDS,
+      MemberCategory.PUBLIC_CLASSES, MemberCategory.DECLARED_CLASSES };
 
   @Test
   @SuppressWarnings("java:S5961")
@@ -70,60 +55,60 @@ class MyBatisMapperNativeConfigurationProcessorTest {
             .addPropertyValue("mapperInterface", SampleMapper.class)
             .addPropertyValue("sqlSessionTemplate", new RuntimeBeanNameReference("sqlSessionTemplate"))
             .getBeanDefinition());
-    NativeConfigurationRegistry registry = process(beanFactory);
+    RuntimeHints hints = process(beanFactory);
     // reflection hint
     {
-      Map<Class<?>, DefaultNativeReflectionEntry> entries = registry.reflection().reflectionEntries()
-          .collect(Collectors.toMap(DefaultNativeReflectionEntry::getType, x -> x));
-      Assertions.assertThat(entries).hasSize(13);
-      // mapper interface
-      Assertions.assertThat(entries.get(SampleMapper.class))
-          .satisfies(x -> Assertions.assertThat(x.getAccess().toArray()).isEqualTo(TYPE_ACCESSES));
-      // mapper method argument and return type
-      Assertions.assertThat(entries.get(SampleMapper.Sample.class))
-          .satisfies(x -> Assertions.assertThat(x.getAccess().toArray()).isEqualTo(TYPE_ACCESSES));
-      Assertions.assertThat(entries.get(SampleMapper.SampleParam.class))
-          .satisfies(x -> Assertions.assertThat(x.getAccess().toArray()).isEqualTo(TYPE_ACCESSES));
-      Assertions.assertThat(entries.get(SampleMapper.Sample2.class))
-          .satisfies(x -> Assertions.assertThat(x.getAccess().toArray()).isEqualTo(TYPE_ACCESSES));
-      Assertions.assertThat(entries.get(SampleMapper.Sample2Param.class))
-          .satisfies(x -> Assertions.assertThat(x.getAccess().toArray()).isEqualTo(TYPE_ACCESSES));
-      // sql provider
-      Assertions.assertThat(entries.get(SampleMapper.SelectProviderClass1.class))
-          .satisfies(x -> Assertions.assertThat(x.getAccess().toArray()).isEqualTo(TYPE_ACCESSES));
-      Assertions.assertThat(entries.get(SampleMapper.SelectProviderClass2.class))
-          .satisfies(x -> Assertions.assertThat(x.getAccess().toArray()).isEqualTo(TYPE_ACCESSES));
-      Assertions.assertThat(entries.get(SampleMapper.InsertProviderClass1.class))
-          .satisfies(x -> Assertions.assertThat(x.getAccess().toArray()).isEqualTo(TYPE_ACCESSES));
-      Assertions.assertThat(entries.get(SampleMapper.InsertProviderClass2.class))
-          .satisfies(x -> Assertions.assertThat(x.getAccess().toArray()).isEqualTo(TYPE_ACCESSES));
-      Assertions.assertThat(entries.get(SampleMapper.UpdateProviderClass1.class))
-          .satisfies(x -> Assertions.assertThat(x.getAccess().toArray()).isEqualTo(TYPE_ACCESSES));
-      Assertions.assertThat(entries.get(SampleMapper.UpdateProviderClass2.class))
-          .satisfies(x -> Assertions.assertThat(x.getAccess().toArray()).isEqualTo(TYPE_ACCESSES));
-      Assertions.assertThat(entries.get(SampleMapper.DeleteProviderClass1.class))
-          .satisfies(x -> Assertions.assertThat(x.getAccess().toArray()).isEqualTo(TYPE_ACCESSES));
-      Assertions.assertThat(entries.get(SampleMapper.DeleteProviderClass2.class))
-          .satisfies(x -> Assertions.assertThat(x.getAccess().toArray()).isEqualTo(TYPE_ACCESSES));
+      assertThat(hints.reflection().typeHints()).hasSize(13);
+      assertThat(RuntimeHintsPredicates.reflection().onType(SampleMapper.class).withMemberCategories(MEMBER_CATEGORIES))
+          .accepts(hints);
+      assertThat(
+          RuntimeHintsPredicates.reflection().onType(SampleMapper.Sample.class).withMemberCategories(MEMBER_CATEGORIES))
+              .accepts(hints);
+      assertThat(RuntimeHintsPredicates.reflection().onType(SampleMapper.SampleParam.class)
+          .withMemberCategories(MEMBER_CATEGORIES)).accepts(hints);
+      assertThat(RuntimeHintsPredicates.reflection().onType(SampleMapper.Sample2.class)
+          .withMemberCategories(MEMBER_CATEGORIES)).accepts(hints);
+      assertThat(RuntimeHintsPredicates.reflection().onType(SampleMapper.Sample2Param.class)
+          .withMemberCategories(MEMBER_CATEGORIES)).accepts(hints);
+      assertThat(RuntimeHintsPredicates.reflection().onType(SampleMapper.SelectProviderClass1.class)
+          .withMemberCategories(MEMBER_CATEGORIES)).accepts(hints);
+      assertThat(RuntimeHintsPredicates.reflection().onType(SampleMapper.SelectProviderClass2.class)
+          .withMemberCategories(MEMBER_CATEGORIES)).accepts(hints);
+      assertThat(RuntimeHintsPredicates.reflection().onType(SampleMapper.InsertProviderClass1.class)
+          .withMemberCategories(MEMBER_CATEGORIES)).accepts(hints);
+      assertThat(RuntimeHintsPredicates.reflection().onType(SampleMapper.InsertProviderClass2.class)
+          .withMemberCategories(MEMBER_CATEGORIES)).accepts(hints);
+      assertThat(RuntimeHintsPredicates.reflection().onType(SampleMapper.UpdateProviderClass1.class)
+          .withMemberCategories(MEMBER_CATEGORIES)).accepts(hints);
+      assertThat(RuntimeHintsPredicates.reflection().onType(SampleMapper.UpdateProviderClass2.class)
+          .withMemberCategories(MEMBER_CATEGORIES)).accepts(hints);
+      assertThat(RuntimeHintsPredicates.reflection().onType(SampleMapper.DeleteProviderClass1.class)
+          .withMemberCategories(MEMBER_CATEGORIES)).accepts(hints);
+      assertThat(RuntimeHintsPredicates.reflection().onType(SampleMapper.DeleteProviderClass2.class)
+          .withMemberCategories(MEMBER_CATEGORIES)).accepts(hints);
     }
     // proxy hint
     {
-      List<NativeProxyEntry> entries = new ArrayList<>(registry.proxy().getEntries());
-      Assertions.assertThat(entries).hasSize(1);
-      ProxiesDescriptor proxiesDescriptor = new ProxiesDescriptor();
-      entries.forEach(x -> x.contribute(proxiesDescriptor));
-      List<JdkProxyDescriptor> jdkProxyDescriptors = new ArrayList<>(proxiesDescriptor.getProxyDescriptors());
-      Assertions.assertThat(jdkProxyDescriptors).hasSize(1);
-      Assertions.assertThat(jdkProxyDescriptors.get(0)).satisfies(x -> {
-        Assertions.assertThat(x.isClassProxy()).isFalse();
-        Assertions.assertThat(x.getTypes()).containsExactlyInAnyOrder("org.mybatis.spring.nativex.mapper.SampleMapper");
-      });
+      assertThat(hints.proxies().jdkProxyHints()).hasSize(1);
+      assertThat(RuntimeHintsPredicates.proxies().forInterfaces(SampleMapper.class)).accepts(hints);
     }
     // resource hint
     {
-      Set<String> resources = registry.resources().toResourcesDescriptor().getPatterns();
-      Assertions.assertThat(resources).containsExactlyInAnyOrder("org/mybatis/spring/nativex/mapper/SampleMapper.xml");
+      assertThat(RuntimeHintsPredicates.resource().forResource("org/mybatis/spring/nativex/mapper/SampleMapper.xml"))
+          .accepts(hints);
     }
+  }
+
+  @Test
+  void clearConstructorArgumentsForMapperFactoryBean() {
+    DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+    beanFactory.registerBeanDefinition("sampleMapper", BeanDefinitionBuilder.rootBeanDefinition(MapperFactoryBean.class)
+        .addConstructorArgValue(SampleMapper.class.getName()).addPropertyValue("mapperInterface", SampleMapper.class)
+        .addPropertyValue("sqlSessionTemplate", new RuntimeBeanNameReference("sqlSessionTemplate"))
+        .getBeanDefinition());
+    RuntimeHints hints = process(beanFactory);
+    assertThat(hints.reflection().typeHints()).isNotEmpty();
+    assertThat(beanFactory.getBeanDefinition("sampleMapper").getConstructorArgumentValues().isEmpty()).isTrue();
   }
 
   @Test
@@ -139,42 +124,29 @@ class MyBatisMapperNativeConfigurationProcessorTest {
             .addPropertyValue("mapperInterface", Sample3Mapper.class)
             .addPropertyValue("sqlSessionTemplate", new RuntimeBeanNameReference("sqlSessionTemplate"))
             .getBeanDefinition());
-    NativeConfigurationRegistry registry = process(beanFactory);
+    RuntimeHints hints = process(beanFactory);
     // reflection hint
     {
-      Map<Class<?>, DefaultNativeReflectionEntry> entries = registry.reflection().reflectionEntries()
-          .collect(Collectors.toMap(DefaultNativeReflectionEntry::getType, x -> x));
-      Assertions.assertThat(entries).hasSize(2);
-      // mapper interface
-      Assertions.assertThat(entries.get(Sample2Mapper.class))
-          .satisfies(x -> Assertions.assertThat(x.getAccess().toArray()).isEqualTo(TYPE_ACCESSES));
-      Assertions.assertThat(entries.get(Sample3Mapper.class))
-          .satisfies(x -> Assertions.assertThat(x.getAccess().toArray()).isEqualTo(TYPE_ACCESSES));
+      assertThat(hints.reflection().typeHints()).hasSize(2);
+      assertThat(
+          RuntimeHintsPredicates.reflection().onType(Sample2Mapper.class).withMemberCategories(MEMBER_CATEGORIES))
+              .accepts(hints);
+      assertThat(
+          RuntimeHintsPredicates.reflection().onType(Sample3Mapper.class).withMemberCategories(MEMBER_CATEGORIES))
+              .accepts(hints);
     }
     // proxy hint
     {
-      List<NativeProxyEntry> entries = new ArrayList<>(registry.proxy().getEntries());
-      Assertions.assertThat(entries).hasSize(2);
-      ProxiesDescriptor proxiesDescriptor = new ProxiesDescriptor();
-      entries.forEach(x -> x.contribute(proxiesDescriptor));
-      List<JdkProxyDescriptor> jdkProxyDescriptors = new ArrayList<>(proxiesDescriptor.getProxyDescriptors());
-      Assertions.assertThat(jdkProxyDescriptors).hasSize(2);
-      Assertions.assertThat(jdkProxyDescriptors.get(0)).satisfies(x -> {
-        Assertions.assertThat(x.isClassProxy()).isFalse();
-        Assertions.assertThat(x.getTypes())
-            .containsExactlyInAnyOrder("org.mybatis.spring.nativex.mapper.Sample2Mapper");
-      });
-      Assertions.assertThat(jdkProxyDescriptors.get(1)).satisfies(x -> {
-        Assertions.assertThat(x.isClassProxy()).isFalse();
-        Assertions.assertThat(x.getTypes())
-            .containsExactlyInAnyOrder("org.mybatis.spring.nativex.mapper.Sample3Mapper");
-      });
+      assertThat(hints.proxies().jdkProxyHints()).hasSize(2);
+      assertThat(RuntimeHintsPredicates.proxies().forInterfaces(Sample2Mapper.class)).accepts(hints);
+      assertThat(RuntimeHintsPredicates.proxies().forInterfaces(Sample3Mapper.class)).accepts(hints);
     }
     // resource hint
     {
-      Set<String> resources = registry.resources().toResourcesDescriptor().getPatterns();
-      Assertions.assertThat(resources).containsExactlyInAnyOrder("org/mybatis/spring/nativex/mapper/Sample2Mapper.xml",
-          "org/mybatis/spring/nativex/mapper/Sample3Mapper.xml");
+      assertThat(RuntimeHintsPredicates.resource().forResource("org/mybatis/spring/nativex/mapper/Sample2Mapper.xml"))
+          .accepts(hints);
+      assertThat(RuntimeHintsPredicates.resource().forResource("org/mybatis/spring/nativex/mapper/Sample3Mapper.xml"))
+          .accepts(hints);
     }
   }
 
@@ -186,34 +158,23 @@ class MyBatisMapperNativeConfigurationProcessorTest {
             .addPropertyValue("mapperInterface", Sample2Mapper.class)
             .addPropertyValue("sqlSessionTemplate", new RuntimeBeanNameReference("sqlSessionTemplate"))
             .getBeanDefinition());
-    NativeConfigurationRegistry registry = process(beanFactory);
+    RuntimeHints hints = process(beanFactory);
     // reflection hint
     {
-      Map<Class<?>, DefaultNativeReflectionEntry> entries = registry.reflection().reflectionEntries()
-          .collect(Collectors.toMap(DefaultNativeReflectionEntry::getType, x -> x));
-      Assertions.assertThat(entries).hasSize(1);
-      // mapper interface
-      Assertions.assertThat(entries.get(Sample2Mapper.class))
-          .satisfies(x -> Assertions.assertThat(x.getAccess().toArray()).isEqualTo(TYPE_ACCESSES));
+      assertThat(hints.reflection().typeHints()).hasSize(1);
+      assertThat(
+          RuntimeHintsPredicates.reflection().onType(Sample2Mapper.class).withMemberCategories(MEMBER_CATEGORIES))
+              .accepts(hints);
     }
     // proxy hint
     {
-      List<NativeProxyEntry> entries = new ArrayList<>(registry.proxy().getEntries());
-      Assertions.assertThat(entries).hasSize(1);
-      ProxiesDescriptor proxiesDescriptor = new ProxiesDescriptor();
-      entries.forEach(x -> x.contribute(proxiesDescriptor));
-      List<JdkProxyDescriptor> jdkProxyDescriptors = new ArrayList<>(proxiesDescriptor.getProxyDescriptors());
-      Assertions.assertThat(jdkProxyDescriptors).hasSize(1);
-      Assertions.assertThat(jdkProxyDescriptors.get(0)).satisfies(x -> {
-        Assertions.assertThat(x.isClassProxy()).isFalse();
-        Assertions.assertThat(x.getTypes())
-            .containsExactlyInAnyOrder("org.mybatis.spring.nativex.mapper.Sample2Mapper");
-      });
+      assertThat(hints.proxies().jdkProxyHints()).hasSize(1);
+      assertThat(RuntimeHintsPredicates.proxies().forInterfaces(Sample2Mapper.class)).accepts(hints);
     }
     // resource hint
     {
-      Set<String> resources = registry.resources().toResourcesDescriptor().getPatterns();
-      Assertions.assertThat(resources).containsExactlyInAnyOrder("org/mybatis/spring/nativex/mapper/Sample2Mapper.xml");
+      assertThat(RuntimeHintsPredicates.resource().forResource("org/mybatis/spring/nativex/mapper/Sample2Mapper.xml"))
+          .accepts(hints);
     }
   }
 
@@ -224,19 +185,10 @@ class MyBatisMapperNativeConfigurationProcessorTest {
         BeanDefinitionBuilder.rootBeanDefinition(MapperFactoryBean.class)
             .addPropertyValue("sqlSessionTemplate", new RuntimeBeanNameReference("sqlSessionTemplate"))
             .getBeanDefinition());
-    NativeConfigurationRegistry registry = process(beanFactory);
-    // reflection hint
-    {
-      Assertions.assertThat(registry.reflection().reflectionEntries()).isEmpty();
-    }
-    // proxy hint
-    {
-      Assertions.assertThat(registry.proxy().getEntries()).isEmpty();
-    }
-    // resource hint
-    {
-      Assertions.assertThat(registry.resources().toResourcesDescriptor().getPatterns()).isEmpty();
-    }
+    RuntimeHints hints = process(beanFactory);
+    assertThat(hints.reflection().typeHints()).isEmpty();
+    assertThat(hints.proxies().jdkProxyHints()).isEmpty();
+    assertThat(hints.resources().resourcePatternHints()).isEmpty();
   }
 
   @Test
@@ -246,25 +198,22 @@ class MyBatisMapperNativeConfigurationProcessorTest {
         BeanDefinitionBuilder.rootBeanDefinition(MapperFactoryBean.class).addPropertyValue("mapperInterface", null)
             .addPropertyValue("sqlSessionTemplate", new RuntimeBeanNameReference("sqlSessionTemplate"))
             .getBeanDefinition());
-    NativeConfigurationRegistry registry = process(beanFactory);
-    // reflection hint
-    {
-      Assertions.assertThat(registry.reflection().reflectionEntries()).isEmpty();
-    }
-    // proxy hint
-    {
-      Assertions.assertThat(registry.proxy().getEntries()).isEmpty();
-    }
-    // resource hint
-    {
-      Assertions.assertThat(registry.resources().toResourcesDescriptor().getPatterns()).isEmpty();
-    }
+    RuntimeHints hints = process(beanFactory);
+    assertThat(hints.reflection().typeHints()).isEmpty();
+    assertThat(hints.proxies().jdkProxyHints()).isEmpty();
+    assertThat(hints.resources().resourcePatternHints()).isEmpty();
   }
 
-  private NativeConfigurationRegistry process(DefaultListableBeanFactory beanFactory) {
-    NativeConfigurationRegistry registry = new NativeConfigurationRegistry();
-    new MyBatisMapperNativeConfigurationProcessor().process(beanFactory, registry);
-    return registry;
+  private RuntimeHints process(DefaultListableBeanFactory beanFactory) {
+    RuntimeHints hints = new RuntimeHints();
+    GenerationContext generationContext = mock(GenerationContext.class);
+    when(generationContext.getRuntimeHints()).thenReturn(hints);
+    BeanFactoryInitializationAotContribution contribution = new MyBatisMapperNativeConfigurationProcessor()
+        .processAheadOfTime(beanFactory);
+    if (contribution != null) {
+      contribution.applyTo(generationContext, mock(BeanFactoryInitializationCode.class));
+    }
+    return hints;
   }
 
   private static class MyMapperFactoryBean<T> extends MapperFactoryBean<T> {
