@@ -19,8 +19,8 @@ import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import org.springframework.aot.hint.MemberCategory;
 import org.springframework.context.annotation.Import;
-import org.springframework.nativex.hint.TypeAccess;
 
 /**
  * The annotation that indicates scan rules of resources for running on native-image.
@@ -102,7 +102,7 @@ public @interface MyBatisResourcesScan {
    *
    * @return access scopes for applying scanned classes to reflection hint
    */
-  TypeAccess[] typeAccesses() default {};
+  MemberCategory[] typeAccesses() default {};
 
   /**
    * Return location patterns for adding resource hint file under classpath.

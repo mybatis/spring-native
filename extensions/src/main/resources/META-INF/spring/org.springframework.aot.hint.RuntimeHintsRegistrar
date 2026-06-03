@@ -1,0 +1,4 @@
+org.mybatis.spring.nativex.MyBatisDynamicSqlNativeConfiguration
+org.mybatis.spring.nativex.MyBatisFreeMarkerNativeConfiguration
+org.mybatis.spring.nativex.MyBatisThymeleafNativeConfiguration
+org.mybatis.spring.nativex.MyBatisVelocityNativeConfiguration

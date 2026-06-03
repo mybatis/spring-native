@@ -19,17 +19,28 @@ import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.SerializationHint;
+import org.springframework.context.annotation.ImportRuntimeHints;
 
-@NativeHint(serializables = @SerializationHint(types = { ArrayList.class, City.class, String.class, Integer.class,
-    Number.class }))
+@ImportRuntimeHints(MybatisSpringNativeSampleApplication.CacheRuntimeHints.class)
 @SpringBootApplication
 public class MybatisSpringNativeSampleApplication {
+
+  static class CacheRuntimeHints implements RuntimeHintsRegistrar {
+    @Override
+    public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+      hints.serialization().registerType(ArrayList.class);
+      hints.serialization().registerType(City.class);
+      hints.serialization().registerType(String.class);
+      hints.serialization().registerType(Integer.class);
+      hints.serialization().registerType(Number.class);
+    }
+  }
 
   private static final Logger log = LoggerFactory.getLogger("ApLog");
 

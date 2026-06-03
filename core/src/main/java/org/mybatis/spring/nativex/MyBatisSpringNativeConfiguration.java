@@ -15,47 +15,31 @@
  */
 package org.mybatis.spring.nativex;
 
-import static org.springframework.nativex.hint.TypeAccess.DECLARED_CLASSES;
-import static org.springframework.nativex.hint.TypeAccess.DECLARED_CONSTRUCTORS;
-import static org.springframework.nativex.hint.TypeAccess.DECLARED_FIELDS;
-import static org.springframework.nativex.hint.TypeAccess.DECLARED_METHODS;
-import static org.springframework.nativex.hint.TypeAccess.PUBLIC_CLASSES;
-import static org.springframework.nativex.hint.TypeAccess.PUBLIC_CONSTRUCTORS;
-import static org.springframework.nativex.hint.TypeAccess.PUBLIC_FIELDS;
-import static org.springframework.nativex.hint.TypeAccess.PUBLIC_METHODS;
-
 import org.mybatis.spring.SqlSessionFactoryBean;
-import org.mybatis.spring.SqlSessionTemplate;
-import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ResourceHint;
-import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.util.ClassUtils;
 
 /**
  * Registers hints to make a MyBatis Spring component work in a Spring Native context.
  *
  * @author Kazuki Shimizu
  */
-// @formatter:off
-@NativeHint(
-    trigger = SqlSessionTemplate.class,
-    resources = @ResourceHint(
-        patterns = "org/mybatis/spring/config/.*.xsd"
-    )
-)
-@TypeHint(
-    types = SqlSessionFactoryBean.class,
-    access = {
-        PUBLIC_CONSTRUCTORS,
-        PUBLIC_CLASSES,
-        PUBLIC_FIELDS,
-        PUBLIC_METHODS,
-        DECLARED_CLASSES,
-        DECLARED_CONSTRUCTORS,
-        DECLARED_FIELDS,
-        DECLARED_METHODS
+public class MyBatisSpringNativeConfiguration implements RuntimeHintsRegistrar {
+
+  private static final MemberCategory[] MEMBER_CATEGORIES = { MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS,
+      MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.INVOKE_PUBLIC_METHODS,
+      MemberCategory.INVOKE_DECLARED_METHODS, MemberCategory.PUBLIC_FIELDS, MemberCategory.DECLARED_FIELDS,
+      MemberCategory.PUBLIC_CLASSES, MemberCategory.DECLARED_CLASSES };
+
+  @Override
+  public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+    if (!ClassUtils.isPresent("org.mybatis.spring.SqlSessionTemplate", classLoader)) {
+      return;
     }
-)
-// @formatter:on
-public class MyBatisSpringNativeConfiguration implements NativeConfiguration {
+    hints.reflection().registerType(SqlSessionFactoryBean.class, MEMBER_CATEGORIES);
+    hints.resources().registerPattern("org/mybatis/spring/config/*.xsd");
+  }
+
 }

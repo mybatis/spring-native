@@ -22,6 +22,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mybatis.spring.mapper.MapperFactoryBean;
 import org.mybatis.spring.nativex.MyBatisResourcesScan;
 import org.mybatis.spring.nativex.component.AbstractTypeHandler;
 import org.mybatis.spring.nativex.component.BarService;
@@ -31,6 +32,9 @@ import org.mybatis.spring.nativex.component.TypeHandlers;
 import org.mybatis.spring.nativex.component2.AnyTypeHandler;
 import org.mybatis.spring.nativex.entity.City;
 import org.mybatis.spring.nativex.entity.Country;
+import org.mybatis.spring.nativex.mapper.SampleMapper;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -131,6 +135,21 @@ class MyBatisSpringNativeAutoConfigurationTest {
       Assertions.assertThat(factory.getConfiguration().getMappedStatementNames()).containsExactlyInAnyOrder(
           "sub1.AnyMapper.select", "select", "sub1.FooMapper.select", "sub1.BarMapper.select");
     }
+  }
+
+  @Test
+  void clearMapperFactoryBeanConstructorArguments() {
+    DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+    beanFactory.registerBeanDefinition("sampleMapper",
+        BeanDefinitionBuilder.rootBeanDefinition(MapperFactoryBean.class)
+            .addConstructorArgValue(SampleMapper.class.getName())
+            .addPropertyValue("mapperInterface", SampleMapper.class).getBeanDefinition());
+    Assertions.assertThat(beanFactory.getBeanDefinition("sampleMapper").getConstructorArgumentValues().isEmpty())
+        .isFalse();
+    new MyBatisSpringNativeAutoConfiguration().mybatisMapperFactoryBeanDefinitionPostProcessor()
+        .postProcessBeanFactory(beanFactory);
+    Assertions.assertThat(beanFactory.getBeanDefinition("sampleMapper").getConstructorArgumentValues().isEmpty())
+        .isTrue();
   }
 
   @EnableAutoConfiguration

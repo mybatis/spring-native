@@ -15,12 +15,16 @@
  */
 package org.mybatis.spring.nativex;
 
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mybatis.spring.mapper.MapperFactoryBean;
 import org.mybatis.spring.nativex.mapper.SampleMapper;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.support.RegisteredBean;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 
 /**
@@ -36,11 +40,32 @@ class MyBatisMapperFactoryBeanPostProcessorTest {
         .rootBeanDefinition(MapperFactoryBean.class).addPropertyValue("mapperInterface", SampleMapper.class)
         .getBeanDefinition();
     Assertions.assertThat(beanDefinition.getResolvableType().hasUnresolvableGenerics()).isTrue();
-    postProcess(beanDefinition);
+    postProcess(MapperFactoryBean.class, beanDefinition);
     Assertions.assertThat(beanDefinition.getResolvableType().hasUnresolvableGenerics()).isFalse();
     Assertions.assertThat(beanDefinition.getTargetType()).isEqualTo(MapperFactoryBean.class);
     Assertions.assertThat(beanDefinition.getResolvableType().getGenerics()).hasSize(1);
     Assertions.assertThat(beanDefinition.getResolvableType().getGenerics()[0].toClass()).isEqualTo(SampleMapper.class);
+  }
+
+  @Test
+  void clearConstructorArgumentsWhenHasGenericConstructorArgument() {
+    RootBeanDefinition beanDefinition = (RootBeanDefinition) BeanDefinitionBuilder
+        .rootBeanDefinition(MapperFactoryBean.class).addConstructorArgValue(SampleMapper.class.getName())
+        .addPropertyValue("mapperInterface", SampleMapper.class).getBeanDefinition();
+    Assertions.assertThat(beanDefinition.getConstructorArgumentValues().getArgumentCount()).isEqualTo(1);
+    postProcess(MapperFactoryBean.class, beanDefinition);
+    Assertions.assertThat(beanDefinition.getConstructorArgumentValues().isEmpty()).isTrue();
+  }
+
+  @Test
+  void clearConstructorArgumentsWhenHasIndexedConstructorArgument() {
+    RootBeanDefinition beanDefinition = (RootBeanDefinition) BeanDefinitionBuilder
+        .rootBeanDefinition(MapperFactoryBean.class).addConstructorArgValue(SampleMapper.class.getName())
+        .addPropertyValue("mapperInterface", SampleMapper.class).getBeanDefinition();
+    beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(1, "sampleMapperClass");
+    Assertions.assertThat(beanDefinition.getConstructorArgumentValues().getArgumentCount()).isEqualTo(2);
+    postProcess(MapperFactoryBean.class, beanDefinition);
+    Assertions.assertThat(beanDefinition.getConstructorArgumentValues().isEmpty()).isTrue();
   }
 
   @Test
@@ -49,7 +74,7 @@ class MyBatisMapperFactoryBeanPostProcessorTest {
         .rootBeanDefinition(MapperFactoryBean2.class).addPropertyValue("mapperInterface", SampleMapper.class)
         .getBeanDefinition();
     Assertions.assertThat(beanDefinition.getResolvableType().hasUnresolvableGenerics()).isTrue();
-    postProcess(beanDefinition);
+    postProcess(MapperFactoryBean2.class, beanDefinition);
     Assertions.assertThat(beanDefinition.getResolvableType().hasUnresolvableGenerics()).isFalse();
     Assertions.assertThat(beanDefinition.getTargetType()).isEqualTo(MapperFactoryBean2.class);
     Assertions.assertThat(beanDefinition.getResolvableType().getGenerics()).hasSize(1);
@@ -62,19 +87,21 @@ class MyBatisMapperFactoryBeanPostProcessorTest {
         .rootBeanDefinition(SampleMapperFactoryBean.class).addPropertyValue("mapperInterface", SampleMapper.class)
         .getBeanDefinition();
     Assertions.assertThat(beanDefinition.getResolvableType().hasUnresolvableGenerics()).isFalse();
-    postProcess(beanDefinition);
+    postProcess(SampleMapperFactoryBean.class, beanDefinition);
     Assertions.assertThat(beanDefinition.getResolvableType().hasUnresolvableGenerics()).isFalse();
   }
 
-  // TODO Now this case is limitation using MapperFactoryBean's subclass
+  // With BeanRegistrationAotProcessor, the processAheadOfTime method catches and ignores exceptions
+  // during type resolution (unlike the old BeanDefinitionPostProcessor which propagated them).
   @Test
-  void failResolveMapperInterfaceTypeWhenMapperFactoryBeanSubclassWithMultiGenerics() {
+  void skipResolveMapperInterfaceTypeWhenMapperFactoryBeanSubclassWithMultiGenerics() {
     RootBeanDefinition beanDefinition = (RootBeanDefinition) BeanDefinitionBuilder
         .rootBeanDefinition(MapperFactoryBean3.class).addPropertyValue("mapperInterface", SampleMapper.class)
         .getBeanDefinition();
     Assertions.assertThat(beanDefinition.getResolvableType().hasUnresolvableGenerics()).isTrue();
-    Assertions.assertThatIllegalArgumentException().isThrownBy(() -> postProcess(beanDefinition)).withMessage(
-        "Mismatched number of generics specified for private static class org.mybatis.spring.nativex.MyBatisMapperFactoryBeanPostProcessorTest$MapperFactoryBean3<T,Z>");
+    postProcess(MapperFactoryBean3.class, beanDefinition);
+    // exception is caught and ignored, target type remains unset
+    Assertions.assertThat(beanDefinition.getTargetType()).isNull();
   }
 
   @Test
@@ -82,7 +109,7 @@ class MyBatisMapperFactoryBeanPostProcessorTest {
     RootBeanDefinition beanDefinition = (RootBeanDefinition) BeanDefinitionBuilder
         .rootBeanDefinition(MapperFactoryBean.class).getBeanDefinition();
     Assertions.assertThat(beanDefinition.getResolvableType().hasUnresolvableGenerics()).isTrue();
-    postProcess(beanDefinition);
+    postProcess(MapperFactoryBean.class, beanDefinition);
     Assertions.assertThat(beanDefinition.getResolvableType().hasUnresolvableGenerics()).isTrue();
     Assertions.assertThat(beanDefinition.getTargetType()).isNull();
   }
@@ -93,16 +120,8 @@ class MyBatisMapperFactoryBeanPostProcessorTest {
         .rootBeanDefinition(MapperFactoryBean.class).addPropertyValue("mapperInterface", "invalid value")
         .getBeanDefinition();
     Assertions.assertThat(beanDefinition.getResolvableType().hasUnresolvableGenerics()).isTrue();
-    postProcess(beanDefinition);
+    postProcess(MapperFactoryBean.class, beanDefinition);
     Assertions.assertThat(beanDefinition.getResolvableType().hasUnresolvableGenerics()).isTrue();
-    Assertions.assertThat(beanDefinition.getTargetType()).isNull();
-  }
-
-  @Test
-  void skipResolveMapperInterfaceTypeWhenNotPresentBeanClass() {
-    RootBeanDefinition beanDefinition = (RootBeanDefinition) BeanDefinitionBuilder.rootBeanDefinition((Class<?>) null)
-        .getBeanDefinition();
-    postProcess(beanDefinition);
     Assertions.assertThat(beanDefinition.getTargetType()).isNull();
   }
 
@@ -110,15 +129,15 @@ class MyBatisMapperFactoryBeanPostProcessorTest {
   void skipResolveMapperInterfaceTypeWhenBeanClassNotMapperBeanFactory() {
     RootBeanDefinition beanDefinition = (RootBeanDefinition) BeanDefinitionBuilder.rootBeanDefinition(String.class)
         .getBeanDefinition();
-    postProcess(beanDefinition);
+    postProcess(String.class, beanDefinition);
     Assertions.assertThat(beanDefinition.getTargetType()).isNull();
   }
 
-  private void postProcess(RootBeanDefinition beanDefinition) {
-    DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
-    MyBatisMapperFactoryBeanPostProcessor processor = new MyBatisMapperFactoryBeanPostProcessor();
-    processor.setBeanFactory(beanFactory);
-    processor.postProcessBeanDefinition("testBean", beanDefinition);
+  private void postProcess(Class<?> beanClass, RootBeanDefinition beanDefinition) {
+    RegisteredBean registeredBean = mock(RegisteredBean.class);
+    doReturn(beanClass).when(registeredBean).getBeanClass();
+    when(registeredBean.getMergedBeanDefinition()).thenReturn(beanDefinition);
+    new MyBatisMapperFactoryBeanPostProcessor().processAheadOfTime(registeredBean);
   }
 
   private static class MapperFactoryBean2<T> extends MapperFactoryBean<T> {

@@ -15,15 +15,6 @@
  */
 package org.mybatis.spring.nativex;
 
-import static org.springframework.nativex.hint.TypeAccess.DECLARED_CLASSES;
-import static org.springframework.nativex.hint.TypeAccess.DECLARED_CONSTRUCTORS;
-import static org.springframework.nativex.hint.TypeAccess.DECLARED_FIELDS;
-import static org.springframework.nativex.hint.TypeAccess.DECLARED_METHODS;
-import static org.springframework.nativex.hint.TypeAccess.PUBLIC_CLASSES;
-import static org.springframework.nativex.hint.TypeAccess.PUBLIC_CONSTRUCTORS;
-import static org.springframework.nativex.hint.TypeAccess.PUBLIC_FIELDS;
-import static org.springframework.nativex.hint.TypeAccess.PUBLIC_METHODS;
-
 import org.apache.velocity.runtime.ParserPoolImpl;
 import org.apache.velocity.runtime.directive.Break;
 import org.apache.velocity.runtime.directive.Define;
@@ -47,63 +38,38 @@ import org.mybatis.scripting.velocity.TrimDirective;
 import org.mybatis.scripting.velocity.VelocityLanguageDriver;
 import org.mybatis.scripting.velocity.VelocityLanguageDriverConfig;
 import org.mybatis.scripting.velocity.WhereDirective;
-import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ResourceHint;
-import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.util.ClassUtils;
 
 /**
  * Registers hints to make a MyBatis Velocity component work in a Spring Native context.
  *
  * @author Kazuki Shimizu
  */
-// @formatter:off
-@NativeHint(
-    trigger = VelocityLanguageDriver.class,
-    resources = @ResourceHint(
-        patterns = {
-            "mybatis-velocity.properties",
-            "org/apache/velocity/runtime/defaults/.*.properties"
-        }
-    )
-)
-@TypeHint(
-    types = {
-        VelocityLanguageDriver.class,
-        VelocityLanguageDriverConfig.class,
-        ParameterMappingCollector.class,
-        TrimDirective.class,
-        WhereDirective.class,
-        SetDirective.class,
-        InDirective.class,
-        RepeatDirective.class,
-        ResourceManagerImpl.class,
-        ClasspathResourceLoader.class,
-        ResourceCacheImpl.class,
-        ParserPoolImpl.class,
-        UberspectImpl.class,
-        TypeConversionHandlerImpl.class,
-        StandardParser.class,
-        Foreach.class,
-        Include.class,
-        Parse.class,
-        Macro.class,
-        Evaluate.class,
-        Break.class,
-        Define.class,
-        Stop.class
-    },
-    access = {
-        PUBLIC_CONSTRUCTORS,
-        PUBLIC_CLASSES,
-        PUBLIC_FIELDS,
-        PUBLIC_METHODS,
-        DECLARED_CLASSES,
-        DECLARED_CONSTRUCTORS,
-        DECLARED_FIELDS,
-        DECLARED_METHODS
+public class MyBatisVelocityNativeConfiguration implements RuntimeHintsRegistrar {
+
+  private static final MemberCategory[] MEMBER_CATEGORIES = { MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS,
+      MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.INVOKE_PUBLIC_METHODS,
+      MemberCategory.INVOKE_DECLARED_METHODS, MemberCategory.PUBLIC_FIELDS, MemberCategory.DECLARED_FIELDS,
+      MemberCategory.PUBLIC_CLASSES, MemberCategory.DECLARED_CLASSES };
+
+  @Override
+  public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+    if (!ClassUtils.isPresent("org.mybatis.scripting.velocity.VelocityLanguageDriver", classLoader)) {
+      return;
     }
-)
-// @formatter:on
-public class MyBatisVelocityNativeConfiguration implements NativeConfiguration {
+    for (Class<?> type : new Class<?>[] { VelocityLanguageDriver.class, VelocityLanguageDriverConfig.class,
+        ParameterMappingCollector.class, TrimDirective.class, WhereDirective.class, SetDirective.class,
+        InDirective.class, RepeatDirective.class, ResourceManagerImpl.class, ClasspathResourceLoader.class,
+        ResourceCacheImpl.class, ParserPoolImpl.class, UberspectImpl.class, TypeConversionHandlerImpl.class,
+        StandardParser.class, Foreach.class, Include.class, Parse.class, Macro.class, Evaluate.class, Break.class,
+        Define.class, Stop.class }) {
+      hints.reflection().registerType(type, MEMBER_CATEGORIES);
+    }
+    hints.resources().registerPattern("mybatis-velocity.properties");
+    hints.resources().registerPattern("org/apache/velocity/runtime/defaults/*.properties");
+  }
+
 }
