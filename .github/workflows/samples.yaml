@@ -34,7 +34,7 @@ jobs:
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
       - name: Set up GraalVM
-        uses: graalvm/setup-graalvm@6f3fa030c4b8f77c1f554a860f593a654538fa38 # v1
+        uses: graalvm/setup-graalvm@6ceeefe947dedd393c9a1669609b6a3a545ad01e # v1
         with:
           version: 'dev'
           java-version: ${{ matrix.java }}
