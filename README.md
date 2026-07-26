@@ -8,7 +8,7 @@
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=mybatis_spring-native&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=mybatis_spring-native)
 
 [![Maven central](https://maven-badges.herokuapp.com/maven-central/org.mybatis.spring.native/mybatis-spring-native/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.mybatis.spring.native/mybatis-spring-native)
-[![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/https/oss.sonatype.org/org.mybatis.spring.native/mybatis-spring-native.svg)](https://oss.sonatype.org/content/repositories/snapshots/org/mybatis/spring/native/mybatis-spring-native/)
+[![Docs](https://img.shields.io/badge/docs-mybatis.org-blue?logo=github)](https://mybatis.org/spring-native/)
 [![License](https://img.shields.io/:license-apache-brightgreen.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
 ![mybatis-spring](https://mybatis.org/images/mybatis-logo.png)
