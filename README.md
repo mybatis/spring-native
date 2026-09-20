@@ -31,6 +31,7 @@ The project that the MyBatis integration with Spring Native feature.
 
 ### Translations
 
+* [Reference documentation (Español)](docs/src/site/es/markdown/index.md)
 * [Reference documentation (简体中文)](docs/src/site/zh/markdown/index.md)
 * [Reference documentation (한국어)](docs/src/site/ko/markdown/index.md)
 
